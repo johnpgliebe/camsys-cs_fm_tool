@@ -1,0 +1,115 @@
+#
+# Cambridge Systematics Future Mobility Tool - Scenario Configuration
+#
+
+name: base
+desc: Base scenario - all options set to default (false)
+    
+experiment_variables:
+# Pricing variables
+    trip pricing:
+        function: trip_pricing
+        active: false
+        params: 
+            trip_price: 1.0
+    clean vehicles:
+        function: clean_vehicle_costs
+        active: false
+        params: 
+            clean_savings: -0.05
+    vmt fee:
+        function: vmt_fee
+        active: false
+        params:
+            per_mile_fee: 0.20
+    cordon fee:
+        function: congestion_charge
+        active: false
+        params:
+            cordon_area: ['Downtown','North End','West End','South Boston Waterfront',
+                        'Chinatown','Bay Village','Back Bay','Fenway','Longwood Medical Area',
+                        'Mission Hill','Leather District','Fenway','South End']
+            charge: 5
+    parking fee:
+        function: parking_cost_change
+        active: false
+        params:
+            parking_charge: 5
+# Land Use
+    growth shift:
+        function: land_use_growth_shift
+        active: false
+        params: 
+            growth_shift_factor: 0.5
+            zone_factor_file: Densified_TAZs.csv
+    compact land use:
+        function: compact_land_use
+        active: false
+        params: 
+            zone_factor_file: compact_landuse_factors.csv
+    free reduced fare transit:
+        function: transit_mode_fare_factor
+        active: false
+        params:
+            lb_fact: 0
+            rt_fact: 0
+            cr_fact: 0.5
+            boat_fact: 0.5
+            walk_fact: 0
+    bike los:
+        function: bike_advantage_modify_skim
+        active: false
+        params:
+            bike_skim_factor: 0.58
+    bike project improvements:
+        function: active_transportation_modify_skim
+        active: false
+        params:
+            bike_project_file: Densified_TAZs.csv
+    transit ivt:
+        function: transit_ivt_modify_skim
+        active: false
+        params:
+            transit_ivt_factor: 0.95
+    pev factor:
+        function: boston_pev
+        active: false
+        params:
+            pev_factor: 0.90
+    transit improvement projects:
+        function: transit_improvement_projects
+        active: false
+        params:
+            project_impact_file: TAZ_and_time_savings.csv
+            transit_project_factor: 0.3
+    tdm:
+        function: reduce_hbw_peak_trips
+        active: false
+        params:
+            tdm_rate: 0.007
+    boston auto ownership:
+        function: reduce_boston_veh_ownership
+        active: false
+        params:
+            boston_veh_decrease: 0.45
+    outside boston auto ownership:
+        function: reduce_outside_boston_veh_ownership
+        active: false
+        params:
+            veh_decrease: 0.30
+    shared mobility:
+        function: shared_mobility
+        active: false
+        params:
+            param_file: param_calib_SM_AV.xlsx
+            coeffs:
+                base_fare: 3.95
+                time_fare: 0.21
+                dist_fare: 1.35
+                wait_time: 5
+                sh_occupancy: 2.0
+                sh_los_overhead_factor: 1.3
+                sh_cost_factor: 1.3
+                sh_vmt_overhead: 1.5
+                cross_subsidy: 1.0
+            
