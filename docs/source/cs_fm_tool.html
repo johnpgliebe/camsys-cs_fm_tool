@@ -1,0 +1,179 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cs fm tool package &#8212; CS Future Mobility Tool 2019 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="cs-fm-tool-package">
+<h1>cs fm tool package<a class="headerlink" href="#cs-fm-tool-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-cs_fm_tool">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-cs_fm_tool" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="cs_fm_tool.CS_FM_Tool">
+<em class="property">class </em><code class="descclassname">cs_fm_tool.</code><code class="descname">CS_FM_Tool</code><span class="sig-paren">(</span><em>config</em>, <em>scenario_file</em>, <em>perf_meas_file</em>, <em>scen_prefix='UltScen'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cs_fm_tool.html#CS_FM_Tool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cs_fm_tool.CS_FM_Tool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Tool definition class that manages the model runs from a definition.</p>
+<dl class="docutils">
+<dt>A Mode Choice object is created that contains the modified</dt>
+<dd>inputs and outputs from the model process</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>config</strong> – the model paths defined in the config.py</li>
+<li><strong>scenario_file</strong> – the defined scenario values</li>
+<li><strong>perf_meas_file</strong> – the performance measures to generate</li>
+<li><strong>scen_prefix</strong> – the string prefix to affix to the output folder</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Example: </dt>
+<dd><p class="first">import cs_fm_tool
+import param.config as config
+fm = cs_fm_tool.CS_FM_Tool(config, r’paramprice_adj.yaml’,</p>
+<blockquote>
+<div>r’paramperf_meas_nosm.yaml’)</div></blockquote>
+<p class="last">fm.load_inputs()
+fm.setup()
+fm.run()
+fm.post_process()
+fm.archive()</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="cs_fm_tool.CS_FM_Tool.archive">
+<code class="descname">archive</code><span class="sig-paren">(</span><em>out_folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cs_fm_tool.html#CS_FM_Tool.archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cs_fm_tool.CS_FM_Tool.archive" title="Permalink to this definition">¶</a></dt>
+<dd><p>copy model output files to the archive</p>
+<p>archive path is defined in the model config file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cs_fm_tool.CS_FM_Tool.load_inputs">
+<code class="descname">load_inputs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cs_fm_tool.html#CS_FM_Tool.load_inputs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cs_fm_tool.CS_FM_Tool.load_inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>reads inputs into mode choice object</p>
+<p>reads zonal data, skim data, and trip tables</p>
+<p>paths to data is set in config.py</p>
+<p>data must be loaded before setting up scenario</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cs_fm_tool.CS_FM_Tool.mc">
+<code class="descname">mc</code><em class="property"> = None</em><a class="headerlink" href="#cs_fm_tool.CS_FM_Tool.mc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cs_fm_tool.CS_FM_Tool.post_process">
+<code class="descname">post_process</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cs_fm_tool.html#CS_FM_Tool.post_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cs_fm_tool.CS_FM_Tool.post_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>run performance measurement summary routines</p>
+<p>The routines to run are defined in the performance measure
+yaml file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cs_fm_tool.CS_FM_Tool.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cs_fm_tool.html#CS_FM_Tool.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cs_fm_tool.CS_FM_Tool.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>run mode choice model</p>
+<p>All scenario settings need to be conducted before running the 
+mode choice model</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cs_fm_tool.CS_FM_Tool.setup">
+<code class="descname">setup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cs_fm_tool.html#CS_FM_Tool.setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cs_fm_tool.CS_FM_Tool.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>run experiment variable setup routines</p>
+<p>setup routines to be called are defined in the model scenario
+yaml file</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">CS Future Mobility Tool</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Cambridge Systematics, Inc..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/source/cs_fm_tool.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

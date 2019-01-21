@@ -1,0 +1,876 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>mode_choice package &#8212; CS Future Mobility Tool 2019 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="mode-choice-package">
+<h1>mode_choice package<a class="headerlink" href="#mode-choice-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-mode_choice.mode_choice">
+<span id="mode-choice-mode-choice-module"></span><h2>mode_choice.mode_choice module<a class="headerlink" href="#module-mode_choice.mode_choice" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="mode_choice.mode_choice.Mode_Choice">
+<em class="property">class </em><code class="descclassname">mode_choice.mode_choice.</code><code class="descname">Mode_Choice</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mode_choice.html#Mode_Choice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mode_choice.Mode_Choice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Mode choice class that computes mode probabilities and calculated trips by mode.</p>
+<p>This object takes in the skims, parameters, SE data, and trip tables by purpose and time period
+and outputs the trip tables by mode</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>config</strong> – the scenario object defined in the config.py</td>
+</tr>
+</tbody>
+</table>
+<p>Summaries of the modal trip tables are provided by the functions in the mc_util.py module</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">hardcoded skim names and vehicle/tod segments must match the modes defined in model_defs.py</p>
+</div>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">set skim names and market segments dynamically based on model_defs.py</p>
+</div>
+<dl class="method">
+<dt id="mode_choice.mode_choice.Mode_Choice.calculate_trips_by_mode">
+<code class="descname">calculate_trips_by_mode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mode_choice.html#Mode_Choice.calculate_trips_by_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mode_choice.Mode_Choice.calculate_trips_by_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies trip tables to mode shares to generate modal trip tables</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mode_choice.mode_choice.Mode_Choice.call_mode_probability_tables">
+<code class="descname">call_mode_probability_tables</code><span class="sig-paren">(</span><em>pv='0_PK'</em>, <em>mode='DA'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mode_choice.html#Mode_Choice.call_mode_probability_tables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mode_choice.Mode_Choice.call_mode_probability_tables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mode_choice.mode_choice.Mode_Choice.call_var_by_mode">
+<code class="descname">call_var_by_mode</code><span class="sig-paren">(</span><em>pv='0_PK'</em>, <em>var='OVTT'</em>, <em>mode='DA'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mode_choice.html#Mode_Choice.call_var_by_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mode_choice.Mode_Choice.call_var_by_mode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mode_choice.mode_choice.Mode_Choice.load_input">
+<code class="descname">load_input</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mode_choice.html#Mode_Choice.load_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mode_choice.Mode_Choice.load_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the skims, trip tables, and zonal data into memory for processing</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mode_choice.mode_choice.Mode_Choice.read_param">
+<code class="descname">read_param</code><span class="sig-paren">(</span><em>purpose</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mode_choice.html#Mode_Choice.read_param"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mode_choice.Mode_Choice.read_param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads associated parameters file with mode choice coefficients</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mode_choice.mode_choice.Mode_Choice.run_for_purpose">
+<code class="descname">run_for_purpose</code><span class="sig-paren">(</span><em>purpose</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mode_choice.html#Mode_Choice.run_for_purpose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mode_choice.Mode_Choice.run_for_purpose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs mode choice model for selected purpose 
+and populates the table_container object of ModeChoice with the modal tables</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>purpose</strong> – Purpose string (e.g. ‘HBW’) to run</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mode_choice.mode_choice.Mode_Choice.run_model">
+<code class="descname">run_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mode_choice.html#Mode_Choice.run_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mode_choice.Mode_Choice.run_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs mode choice model and populates the table_container object of ModeChoice with the modal tables</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mode_choice.mode_choice.Shared_Mobility">
+<em class="property">class </em><code class="descclassname">mode_choice.mode_choice.</code><code class="descname">Shared_Mobility</code><span class="sig-paren">(</span><em>sm_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mode_choice.html#Shared_Mobility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mode_choice.Shared_Mobility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Shared Mobility Values</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mode_choice.scenario_editor">
+<span id="mode-choice-scenario-editor-module"></span><h2>mode_choice.scenario_editor module<a class="headerlink" href="#module-mode_choice.scenario_editor" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="mode_choice.scenario_editor.active_transportation_modify_skim">
+<code class="descclassname">mode_choice.scenario_editor.</code><code class="descname">active_transportation_modify_skim</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>bike_project_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/scenario_editor.html#active_transportation_modify_skim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.scenario_editor.active_transportation_modify_skim" title="Permalink to this definition">¶</a></dt>
+<dd><p>improve bike and walk skims according to new projects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – the mode choice object containing parameters and inputs</li>
+<li><strong>bike_project_file</strong> – file with zones and factors to adjust bike time and distance</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.scenario_editor.bike_advantage_modify_skim">
+<code class="descclassname">mode_choice.scenario_editor.</code><code class="descname">bike_advantage_modify_skim</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>bike_skim_factor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/scenario_editor.html#bike_advantage_modify_skim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.scenario_editor.bike_advantage_modify_skim" title="Permalink to this definition">¶</a></dt>
+<dd><p>cross the board factoring of bike time and distance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – the mode choice object containing parameters and inputs</li>
+<li><strong>bike_skim_factor</strong> – factor to apply to bike time and distance</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.scenario_editor.boston_pev">
+<code class="descclassname">mode_choice.scenario_editor.</code><code class="descname">boston_pev</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>pev_factor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/scenario_editor.html#boston_pev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.scenario_editor.boston_pev" title="Permalink to this definition">¶</a></dt>
+<dd><p>reduce PEV variable by factor for zones within Boston</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – the mode choice object containing parameters and inputs</li>
+<li><strong>pev_factor</strong> – adjustments to PEV for all Boston zones</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.scenario_editor.clean_vehicle_costs">
+<code class="descclassname">mode_choice.scenario_editor.</code><code class="descname">clean_vehicle_costs</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>clean_savings</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/scenario_editor.html#clean_vehicle_costs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.scenario_editor.clean_vehicle_costs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrease the cost per mile for clean vehicles</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – the mode choice object containing parameters and inputs</li>
+<li><strong>clean_savings</strong> – adjustment value (cents per mile) added to op cost</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.scenario_editor.compact_land_use">
+<code class="descclassname">mode_choice.scenario_editor.</code><code class="descname">compact_land_use</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>zone_factor_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/scenario_editor.html#compact_land_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.scenario_editor.compact_land_use" title="Permalink to this definition">¶</a></dt>
+<dd><p>shifts growth in trips according to zones and factors defined in file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – the mode choice object containing parameters and inputs</li>
+<li><strong>zone_factor_file</strong> – file containing zones and growth factor</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.scenario_editor.congestion_charge">
+<code class="descclassname">mode_choice.scenario_editor.</code><code class="descname">congestion_charge</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>cordon_area</em>, <em>charge</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/scenario_editor.html#congestion_charge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.scenario_editor.congestion_charge" title="Permalink to this definition">¶</a></dt>
+<dd><p>apply a congestion charge for all trips to the cordon area</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – the mode choice object containing parameters and inputs</li>
+<li><strong>cordon_area</strong> – cordon area neighborhoods</li>
+<li><strong>charge</strong> – charge to be applied for trips to the cordon area</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.scenario_editor.land_use_growth_shift">
+<code class="descclassname">mode_choice.scenario_editor.</code><code class="descname">land_use_growth_shift</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>growth_shift_factor</em>, <em>zone_factor_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/scenario_editor.html#land_use_growth_shift"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.scenario_editor.land_use_growth_shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>shifts growth in trips to zones identified in zone factor file</p>
+<p>Growth is shifted to zones identified in the input file from Boston 
+zones not included in the file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – the mode choice object containing parameters and inputs</li>
+<li><strong>growth_shift_factor</strong> – amount of growth to shift</li>
+<li><strong>zone_factor_file</strong> – file containing zones to shift growth to</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.scenario_editor.parking_cost_change">
+<code class="descclassname">mode_choice.scenario_editor.</code><code class="descname">parking_cost_change</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>parking_charge</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/scenario_editor.html#parking_cost_change"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.scenario_editor.parking_cost_change" title="Permalink to this definition">¶</a></dt>
+<dd><p>increase parking costs for trips ending in Boston</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – the mode choice object containing parameters and inputs</li>
+<li><strong>parking_charge</strong> – value to add to parking charge for all zones in Boston</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.scenario_editor.reduce_boston_veh_ownership">
+<code class="descclassname">mode_choice.scenario_editor.</code><code class="descname">reduce_boston_veh_ownership</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>boston_veh_decrease</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/scenario_editor.html#reduce_boston_veh_ownership"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.scenario_editor.reduce_boston_veh_ownership" title="Permalink to this definition">¶</a></dt>
+<dd><p>shift HH from 1+ to zero vehicles for Boston only</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – the mode choice object containing parameters and inputs</li>
+<li><strong>boston_veh_decrease</strong> – factor to shift boston trips from with/vehicle
+to zero vehicle</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.scenario_editor.reduce_hbw_peak_trips">
+<code class="descclassname">mode_choice.scenario_editor.</code><code class="descname">reduce_hbw_peak_trips</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>tdm_rate</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/scenario_editor.html#reduce_hbw_peak_trips"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.scenario_editor.reduce_hbw_peak_trips" title="Permalink to this definition">¶</a></dt>
+<dd><p>reduce HBW trips</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – the mode choice object containing parameters and inputs</li>
+<li><strong>tdm_rate</strong> – adjustment to hbw peak trips</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.scenario_editor.reduce_outside_boston_veh_ownership">
+<code class="descclassname">mode_choice.scenario_editor.</code><code class="descname">reduce_outside_boston_veh_ownership</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>veh_decrease</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/scenario_editor.html#reduce_outside_boston_veh_ownership"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.scenario_editor.reduce_outside_boston_veh_ownership" title="Permalink to this definition">¶</a></dt>
+<dd><p>shift HH from 1+ to zero vehicles for areas outside Boston</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – the mode choice object containing parameters and inputs</li>
+<li><strong>boston_veh_decrease</strong> – factor to shift trips from with/vehicle
+to zero vehicle</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.scenario_editor.shared_mobility">
+<code class="descclassname">mode_choice.scenario_editor.</code><code class="descname">shared_mobility</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>param_file</em>, <em>coeffs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/scenario_editor.html#shared_mobility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.scenario_editor.shared_mobility" title="Permalink to this definition">¶</a></dt>
+<dd><p>setup shared mobility scenarios</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – the mode choice object containing parameters and inputs</li>
+<li><strong>param_file</strong> – parameter file with shared mobility alternatives</li>
+<li><strong>coeffs</strong> – shared mobility fare, waiting time, and subsidy terms</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.scenario_editor.transit_improvement_projects">
+<code class="descclassname">mode_choice.scenario_editor.</code><code class="descname">transit_improvement_projects</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>project_impact_file</em>, <em>transit_project_factor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/scenario_editor.html#transit_improvement_projects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.scenario_editor.transit_improvement_projects" title="Permalink to this definition">¶</a></dt>
+<dd><p>reduce transit OVTT and IVTT according to transit project impacts</p>
+<p>Adjust transit times based on transit projects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – the mode choice object containing parameters and inputs</li>
+<li><strong>project_impact_file</strong> – file with transit projects</li>
+<li><strong>transit_project_factor</strong> – factor to apply to zones with transit projects</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.scenario_editor.transit_ivt_modify_skim">
+<code class="descclassname">mode_choice.scenario_editor.</code><code class="descname">transit_ivt_modify_skim</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>transit_ivt_factor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/scenario_editor.html#transit_ivt_modify_skim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.scenario_editor.transit_ivt_modify_skim" title="Permalink to this definition">¶</a></dt>
+<dd><p>apply transit travel time factor to skims</p>
+<p>Factor transit invehicle time across all modes and time periods</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – the mode choice object containing parameters and inputs</li>
+<li><strong>transit_ivt_factor</strong> – factor to be applied to transit ivt</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.scenario_editor.transit_mode_fare_factor">
+<code class="descclassname">mode_choice.scenario_editor.</code><code class="descname">transit_mode_fare_factor</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>lb_fact</em>, <em>rt_fact</em>, <em>cr_fact</em>, <em>boat_fact</em>, <em>walk_fact</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/scenario_editor.html#transit_mode_fare_factor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.scenario_editor.transit_mode_fare_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>adjust transit fares by sub-mode</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – the mode choice object containing parameters and inputs</li>
+<li><strong>lb_fact</strong> – drive to local bus fare factor</li>
+<li><strong>rt_fact</strong> – drive to rapid transit fare factor</li>
+<li><strong>cr_fact</strong> – drive to commuter rail fare factor</li>
+<li><strong>boat_fact</strong> – drive to ferry fare factor</li>
+<li><strong>walk_fact</strong> – walk to any transit mode fare factor</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.scenario_editor.trip_pricing">
+<code class="descclassname">mode_choice.scenario_editor.</code><code class="descname">trip_pricing</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>trip_price</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/scenario_editor.html#trip_pricing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.scenario_editor.trip_pricing" title="Permalink to this definition">¶</a></dt>
+<dd><p>set per-trip pricing</p>
+<p>create a new parameter file with the modified constant values 
+to reflect additional trip pricing for auto modes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – the mode choice object containing parameters and inputs</li>
+<li><strong>trip_price</strong> – trip price value</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.scenario_editor.vmt_fee">
+<code class="descclassname">mode_choice.scenario_editor.</code><code class="descname">vmt_fee</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>per_mile_fee</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/scenario_editor.html#vmt_fee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.scenario_editor.vmt_fee" title="Permalink to this definition">¶</a></dt>
+<dd><p>adjust vehicle cost per mile to represent VMT fee</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – the mode choice object containing parameters and inputs</li>
+<li><strong>per_mile_fee</strong> – value to add to vehicle operating cost</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mode_choice.mc_util">
+<span id="mode-choice-mc-util-module"></span><h2>mode_choice.mc_util module<a class="headerlink" href="#module-mode_choice.mc_util" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="mode_choice.mc_util.act_pmt_by_neighborhood">
+<code class="descclassname">mode_choice.mc_util.</code><code class="descname">act_pmt_by_neighborhood</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>out_fn=None</em>, <em>by=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mc_util.html#act_pmt_by_neighborhood"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mc_util.act_pmt_by_neighborhood" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summarizes PMT production and attraction by the 26 Boston neighborhoods for active modes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – mode choice module object as defined in the IPython notebook</li>
+<li><strong>out_fn</strong> – output csv filename; if None specified, in the output path defined in config.py</li>
+<li><strong>by</strong> – grouping used for the summary; if None specified, only aggregate production and attraction will be provided.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.mc_util.display_mode_share">
+<code class="descclassname">mode_choice.mc_util.</code><code class="descname">display_mode_share</code><span class="sig-paren">(</span><em>mc_obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mc_util.html#display_mode_share"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mc_util.display_mode_share" title="Permalink to this definition">¶</a></dt>
+<dd><p>This displays a mode share summary by market segment (with / without vehicle, peak / off-peak) on the IPython notebook.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mc_obj</strong> – mode choice module object as defined in the IPython notebook</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.mc_util.mode_share_by_neighborhood">
+<code class="descclassname">mode_choice.mc_util.</code><code class="descname">mode_share_by_neighborhood</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>out_fn=None</em>, <em>by=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mc_util.html#mode_share_by_neighborhood"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mc_util.mode_share_by_neighborhood" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summarizes mode share as the average of trips to/from the 26 Boston neighborhoods, in three categories - drive, non-motorized and transit.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – mode choice module object as defined in the IPython notebook</li>
+<li><strong>out_fn</strong> – output csv filename; if None specified, in the output path defined in config.py</li>
+<li><strong>by</strong> – grouping used for the summary</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.mc_util.pmt_by_neighborhood">
+<code class="descclassname">mode_choice.mc_util.</code><code class="descname">pmt_by_neighborhood</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>out_fn=None</em>, <em>by=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mc_util.html#pmt_by_neighborhood"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mc_util.pmt_by_neighborhood" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summarizes PMT production and attraction by the 26 Boston neighborhoods.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – mode choice module object as defined in the IPython notebook</li>
+<li><strong>out_fn</strong> – output csv filename; if None specified, in the output path defined in config.py</li>
+<li><strong>by</strong> – grouping used for the summary; if None specified, only aggregate production and attraction will be provided.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.mc_util.productions_by_region">
+<code class="descclassname">mode_choice.mc_util.</code><code class="descname">productions_by_region</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>region='all'</em>, <em>cordon_area=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mc_util.html#productions_by_region"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mc_util.productions_by_region" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.mc_util.sm_trips_by_neighborhood">
+<code class="descclassname">mode_choice.mc_util.</code><code class="descname">sm_trips_by_neighborhood</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>out_fn=None</em>, <em>by=None</em>, <em>sm_mode='SM_RA'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mc_util.html#sm_trips_by_neighborhood"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mc_util.sm_trips_by_neighborhood" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summarizes PMT production and attraction by the 26 Boston neighborhoods for Shared Mobility Modes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – mode choice module object as defined in the IPython notebook</li>
+<li><strong>out_fn</strong> – output csv filename; if None specified, in the output path defined in config.py</li>
+<li><strong>by</strong> – grouping used for the summary; if None specified, only aggregate production and attraction will be provided.</li>
+<li><strong>sm_mode</strong> – Smart Mobility Mode name</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.mc_util.sm_vmt_by_neighborhood">
+<code class="descclassname">mode_choice.mc_util.</code><code class="descname">sm_vmt_by_neighborhood</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>out_fn=None</em>, <em>by=None</em>, <em>sm_mode='SM_RA'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mc_util.html#sm_vmt_by_neighborhood"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mc_util.sm_vmt_by_neighborhood" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summarizes VMT production and attraction by the 26 Boston neighborhoods for Shared Mobility Modes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – mode choice module object as defined in the IPython notebook</li>
+<li><strong>out_fn</strong> – output csv filename; if None specified, in the output path defined in config.py</li>
+<li><strong>by</strong> – grouping used for the summary; if None specified, only aggregate production and attraction will be provided.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.mc_util.transit_ridership">
+<code class="descclassname">mode_choice.mc_util.</code><code class="descname">transit_ridership</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>by='all'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mc_util.html#transit_ridership"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mc_util.transit_ridership" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summarizes transit ridership by peak period in cities and towns with MBTA subway service.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – mode choice module object as defined in the IPython notebook</li>
+<li><strong>mbta_fn</strong> – TAZ file that contains MBTA coverage definition</li>
+<li><strong>out_path</strong> – output path.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.mc_util.trips_by_mode">
+<code class="descclassname">mode_choice.mc_util.</code><code class="descname">trips_by_mode</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>mode='all'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mc_util.html#trips_by_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mc_util.trips_by_mode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.mc_util.trips_by_neighborhood">
+<code class="descclassname">mode_choice.mc_util.</code><code class="descname">trips_by_neighborhood</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>out_fn=None</em>, <em>by=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mc_util.html#trips_by_neighborhood"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mc_util.trips_by_neighborhood" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summarizes PMT production and attraction by the 26 Boston neighborhoods.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – mode choice module object as defined in the IPython notebook</li>
+<li><strong>out_fn</strong> – output csv filename; if None specified, in the output path defined in config.py</li>
+<li><strong>by</strong> – grouping used for the summary; if None specified, only aggregate production and attraction will be provided.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.mc_util.vmt_by_neighborhood">
+<code class="descclassname">mode_choice.mc_util.</code><code class="descname">vmt_by_neighborhood</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>out_fn=None</em>, <em>by=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mc_util.html#vmt_by_neighborhood"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mc_util.vmt_by_neighborhood" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summarizes VMT production and attraction by the 26 Boston neighborhoods.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – mode choice module object as defined in the IPython notebook</li>
+<li><strong>out_fn</strong> – output csv filename; if None specified, in the output path defined in config.py</li>
+<li><strong>by</strong> – grouping used for the summary; if None specified, only aggregate production and attraction will be provided.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.mc_util.write_boston_mode_share_to_excel">
+<code class="descclassname">mode_choice.mc_util.</code><code class="descname">write_boston_mode_share_to_excel</code><span class="sig-paren">(</span><em>mc_obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mc_util.html#write_boston_mode_share_to_excel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mc_util.write_boston_mode_share_to_excel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes mode share summary by purpose and market segment to an Excel workbook.
+Applies only to trips to/from Boston</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – mode choice module object as defined in the IPython notebook</li>
+<li><strong>out_excel_fn</strong> – output Excel filename, by default in the output path defined in config.py</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.mc_util.write_boston_neighbortown_mode_share_to_excel">
+<code class="descclassname">mode_choice.mc_util.</code><code class="descname">write_boston_neighbortown_mode_share_to_excel</code><span class="sig-paren">(</span><em>mc_obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mc_util.html#write_boston_neighbortown_mode_share_to_excel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mc_util.write_boston_neighbortown_mode_share_to_excel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes mode share summary by purpose and market segment to an Excel workbook.
+Applies only to trips to/from Boston</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – mode choice module object as defined in the IPython notebook</li>
+<li><strong>out_excel_fn</strong> – output Excel filename, by default in the output path defined in config.py</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.mc_util.write_mode_share_to_excel">
+<code class="descclassname">mode_choice.mc_util.</code><code class="descname">write_mode_share_to_excel</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>purpose</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mc_util.html#write_mode_share_to_excel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mc_util.write_mode_share_to_excel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes mode share summary by purpose and market segment to an Excel workbook.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – mode choice module object as defined in the IPython notebook</li>
+<li><strong>purpose</strong> – can be a single purpose or ‘all’, in which case the Excel workbook has six sheets, one for each purpose.</li>
+<li><strong>out_excel_fn</strong> – output Excel filename, by default in the output path defined in config.py</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.mc_util.write_summary_by_subregion">
+<code class="descclassname">mode_choice.mc_util.</code><code class="descname">write_summary_by_subregion</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>by='all'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mc_util.html#write_summary_by_subregion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mc_util.write_summary_by_subregion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summarizes VMT, PMT or mode share by subregions of Massachusetts surrounding Boston (neighboring towns of Boston / within I-93/95 / within I-495).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – mode choice module object as defined in the IPython notebook</li>
+<li><strong>taz_fn</strong> – TAZ file that contains subregion definition</li>
+<li><strong>out_path</strong> – output path.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.mc_util.write_summary_by_subregion_sm">
+<code class="descclassname">mode_choice.mc_util.</code><code class="descname">write_summary_by_subregion_sm</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>by='all'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/mc_util.html#write_summary_by_subregion_sm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.mc_util.write_summary_by_subregion_sm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summarizes Smart Mobility VMT and trips by subregions of Massachusetts surrounding Boston (neighboring towns of Boston / within I-93/95 / within I-495).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mc_obj</strong> – mode choice module object as defined in the IPython notebook</li>
+<li><strong>taz_fn</strong> – TAZ file that contains subregion definition</li>
+<li><strong>out_path</strong> – output path.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mode_choice.trk_util">
+<span id="mode-choice-trk-util-module"></span><h2>mode_choice.trk_util module<a class="headerlink" href="#module-mode_choice.trk_util" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="mode_choice.trk_util.compute_summary_by_subregion">
+<code class="descclassname">mode_choice.trk_util.</code><code class="descname">compute_summary_by_subregion</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>metric='VMT'</em>, <em>subregion='neighboring'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/trk_util.html#compute_summary_by_subregion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.trk_util.compute_summary_by_subregion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computing function used by write_summary_by_subregion(), does not produce outputs</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.trk_util.trip_by_neighborhood">
+<code class="descclassname">mode_choice.trk_util.</code><code class="descname">trip_by_neighborhood</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>out_fn=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/trk_util.html#trip_by_neighborhood"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.trk_util.trip_by_neighborhood" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summarizes Truck trips production and attraction by the 26 Boston neighborhoods.
+:param mc_obj: mode choice module object as defined in the IPython notebook
+:param out_fn: output csv filename; if None specified, in the output path defined in config.py  
+:param by: grouping used for the summary; if None specified, only aggregate production and attraction will be provided.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.trk_util.vmt_by_neighborhood">
+<code class="descclassname">mode_choice.trk_util.</code><code class="descname">vmt_by_neighborhood</code><span class="sig-paren">(</span><em>mc_obj</em>, <em>out_fn=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/trk_util.html#vmt_by_neighborhood"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.trk_util.vmt_by_neighborhood" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summarizes Truck VMT production and attraction by the 26 Boston neighborhoods.
+:param mc_obj: mode choice module object as defined in the IPython notebook
+:param out_fn: output csv filename; if None specified, in the output path defined in config.py  
+:param by: grouping used for the summary; if None specified, only aggregate production and attraction will be provided.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.trk_util.write_summary_by_subregion">
+<code class="descclassname">mode_choice.trk_util.</code><code class="descname">write_summary_by_subregion</code><span class="sig-paren">(</span><em>mc_obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/trk_util.html#write_summary_by_subregion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.trk_util.write_summary_by_subregion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summarizes Truck VMT and trips by subregions of Massachusetts surrounding Boston (neighboring towns of Boston / within I-93/95 / within I-495).
+:param mc_obj: mode choice module object as defined in the IPython notebook
+:param taz_fn: TAZ file that contains subregion definition
+:param out_path: output path.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mode_choice.input_prep">
+<span id="mode-choice-input-prep-module"></span><h2>mode_choice.input_prep module<a class="headerlink" href="#module-mode_choice.input_prep" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="mode_choice.input_prep.inter_extrap_triptable">
+<code class="descclassname">mode_choice.input_prep.</code><code class="descname">inter_extrap_triptable</code><span class="sig-paren">(</span><em>config</em>, <em>year=2030</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/input_prep.html#inter_extrap_triptable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.input_prep.inter_extrap_triptable" title="Permalink to this definition">¶</a></dt>
+<dd><p>interpolate or extrapolate trip tables</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>config</strong> – the scenario object defined in the config.py - path to output trip table</li>
+<li><strong>year</strong> – year of interpolated or extrapolated trip table</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.input_prep.inter_extrap_trucktriptable">
+<code class="descclassname">mode_choice.input_prep.</code><code class="descname">inter_extrap_trucktriptable</code><span class="sig-paren">(</span><em>config</em>, <em>year=2030</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/input_prep.html#inter_extrap_trucktriptable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.input_prep.inter_extrap_trucktriptable" title="Permalink to this definition">¶</a></dt>
+<dd><p>interpolate or extrapolate truck trip tables</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>config</strong> – the scenario object defined in the config.py - path to output trip table</li>
+<li><strong>year</strong> – year of interpolated or extrapolated trip table</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mode_choice.input_prep.land_use_growth_shift">
+<code class="descclassname">mode_choice.input_prep.</code><code class="descname">land_use_growth_shift</code><span class="sig-paren">(</span><em>config</em>, <em>factor=0.5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mode_choice/input_prep.html#land_use_growth_shift"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mode_choice.input_prep.land_use_growth_shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>apply land use growth shifts to tazs defined in Densified_TAZs.csv</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>config</strong> – the scenario object defined in the config.py - path to output trip table and zone files</li>
+<li><strong>factor</strong> – share of growth to be reallocated</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mode_choice">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-mode_choice" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">CS Future Mobility Tool</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Cambridge Systematics, Inc..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/source/mode_choice.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
