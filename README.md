@@ -9,4 +9,4 @@ https://camsys.egnyte.com/fl/clmhr7sfNR/CS_FM_Tool_CFB_Inputs_
 
 # Documentation
 
-https://camsys.github.io/cs_fm_tool
+https://camsys.github.io/cs_fm_tool/
