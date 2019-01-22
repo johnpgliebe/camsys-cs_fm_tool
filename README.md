@@ -29,13 +29,20 @@ Make a copy of the param\baseline.yaml file and configure settings to represent 
 An example is provided using Jupyter notebook (CS FM Tool Demo.ipynb). The tool may also be run directly from the python command line: 
 
 import cs_fm_tool
+
 import param.config as config
+
 fm = cs_fm_tool.CS_FM_Tool(config, r'param\price_adj.yaml',
                    r'param\perf_meas_nosm.yaml')
+
 fm.load_inputs()
+
 fm.setup()
+
 fm.run()
+
 fm.post_process()
+
 fm.archive()
 
 
