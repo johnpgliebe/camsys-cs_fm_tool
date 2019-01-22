@@ -1,0 +1,83 @@
+performance_measures:
+    neighborhood vmt:
+        function: vmt_by_neighborhood
+        active: true
+        params:
+            by: purpose
+    neighborhood shared alone mobility vmt:
+        function: sm_vmt_by_neighborhood
+        active: true
+        params:
+            by: purpose
+            sm_mode: SM_RA
+    neighborhood shared mobility vmt:
+        function: sm_vmt_by_neighborhood
+        active: true
+        params:
+            by: purpose
+            sm_mode: SM_SH
+    neighborhood pmt:
+        function: pmt_by_neighborhood
+        active: true
+        params:
+            by: veh_own
+    neighborhood active pmt:
+        function: act_pmt_by_neighborhood
+        active: true
+        params:
+            by: veh_own
+    neighborhood trips:
+        function: trips_by_neighborhood
+        active: true
+        params:
+            by: purpose
+    neighborhood shared alone mobility trips:
+        function: sm_trips_by_neighborhood
+        active: true
+        params:
+            by: purpose
+            sm_mode: SM_RA
+    neighborhood shared mobility trips:
+        function: sm_trips_by_neighborhood
+        active: true
+        params:
+            by: purpose
+            sm_mode: SM_SH
+    neighborhood mode share:
+        function: mode_share_by_neighborhood
+        active: true
+        params:
+            by: peak
+    subregion summary:
+        function: write_summary_by_subregion
+        active: true
+        params:
+            by: all
+    transit ridership:
+        function: transit_ridership
+        active: true
+        params:
+            by: all
+    zonal trips by mode:
+        function: trips_by_mode
+        active: true
+        params:
+            mode: all
+    zonal trips by region - all:
+        function: productions_by_region
+        active: true
+        params:
+            region: all
+    zonal trips by mode - Boston:
+        function: productions_by_region
+        active: true
+        params:
+            region: Boston
+    zonal trips by mode - cordon:
+        function: productions_by_region
+        active: true
+        params:
+            region: cordon
+            cordon_area: ['Downtown','North End','West End','South Boston Waterfront',
+                        'Chinatown','Bay Village','Back Bay','Fenway','Longwood Medical Area',
+                        'Mission Hill','Leather District','Fenway','South End']
