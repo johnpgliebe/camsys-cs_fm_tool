@@ -66,7 +66,7 @@ def write_trip_tables(mc_obj,out_fn):
     with omx.open_file(out_fn,'w') as ttmc:
         for pv in mc_obj.peak_veh:
             for mode in modes:
-                ttmc[f'{mode}_{pv}'] = mc_obj.trips_by_mode[pv][mode]          
+                ttmc[f'{mode}_{pv}'] = mc_obj.table_container.aggregate_by_mode_segment(mode, pv)
     
 def sum_unequal_length(a,b):
     if len(a)>len(b):
