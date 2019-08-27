@@ -63,6 +63,7 @@ class Mode_Choice(object):
 
     def __read_skims(self):
         # Reads the skims into memory for processing
+        # TODO: replace list with dict
         
         self.skim_list = []
         for skim_fn in self.config.skim_list:
@@ -169,7 +170,7 @@ class Mode_Choice(object):
                 toll[np.where(abs(toll)>1e6)] = 0 # eliminate same-zone large value issues
                 
                 length = skim['Length (Skim)']
-                AO = self.AO_dict[mode]
+                AO = md.AO_dict[mode]
                 
                 table = (toll/AO + length * self.cost_per_mile)
 
@@ -373,7 +374,7 @@ class Mode_Choice(object):
         self.coef_table = param[coef_col]
         self.var_list = param.columns.drop(coef_col)
         self.param = param
-        self.AO_dict = self.config.AO_dict[purpose]
+        self.AO_dict = md.AO_dict
         print(f'✓ Parameter table for {purpose} generated. Time elapsed: {time.time()-self.start_time:.2f} seconds')
         
     def calculate_trips_by_mode(self):

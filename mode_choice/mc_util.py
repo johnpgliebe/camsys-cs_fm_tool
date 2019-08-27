@@ -21,10 +21,10 @@ def display_mode_share(mc_obj):
     :param mc_obj: mode choice module object as defined in the IPython notebook
     '''
     # display mode share tables
-	mode_share = pd.DataFrame(None)
+    mode_share = pd.DataFrame(None)
     for purpose in ['HBW','HBO', 'NHB', 'HBSc1', 'HBSc2', 'HBSc3']:
-		mode_share = mode_share.add(pd.DataFrame({pv:{mode:(mc_obj.table_container.get_table(purpose)[pv][mode].sum()) for mode in mc_obj.table_container.get_table(purpose)[pv]} for pv in mc_obj.peak_veh}).T,
-			fill_value = 0)
+        mode_share = mode_share.add(pd.DataFrame({pv:{mode:(mc_obj.table_container.get_table(purpose)[pv][mode].sum()) for mode in mc_obj.table_container.get_table(purpose)[pv]} for pv in mc_obj.peak_veh}).T,
+            fill_value = 0)
     avg_mode_share = avg_trips_by_mode.divide(avg_trips_by_mode.sum(1),axis = 0)
 
     display(avg_mode_share.style.format("{:.2%}"))
