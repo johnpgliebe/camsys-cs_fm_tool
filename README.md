@@ -27,7 +27,7 @@ Make a copy of the param\baseline.yaml file and configure settings to represent 
 
 ## Run
 An example is provided using Jupyter notebook (CS FM Tool Demo.ipynb). The tool may also be run directly from the python command line: 
-
+````
 import cs_fm_tool
 
 import param.config as config
@@ -44,6 +44,6 @@ fm.run()
 fm.post_process()
 
 fm.archive()
-
+````
 
 
