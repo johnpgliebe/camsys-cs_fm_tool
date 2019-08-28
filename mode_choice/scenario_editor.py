@@ -237,13 +237,23 @@ def boston_pev(mc_obj, pev_factor):
     mc_obj.AccPEV[0:447,0:447] *= pev_factor
     mc_obj.EgrPEV[0:447,0:447] *= pev_factor
 
+def study_area_pev(mc_obj, pev_factor):
+    ''' reduce PEV variable by factor for zones within Boston
+    
+    :param mc_obj: the mode choice object containing parameters and inputs
+    :param pev_factor: adjustments to PEV for all Boston zones
+    '''  
+    mc_obj.AccPEV[study_area,study_area] *= pev_factor
+    mc_obj.EgrPEV[study_area,study_area] *= pev_factor
+
+
 def parking_cost_change(mc_obj, parking_charge):
     ''' increase parking costs for trips ending in Boston
     
     :param mc_obj: the mode choice object containing parameters and inputs
     :param parking_charge: value to add to parking charge for all zones in Boston
     '''  
-    mc_obj.parking[0:md.max_zone,0:447] += parking_charge
+    mc_obj.parking[0:md.max_zone,study_area] += parking_charge
 
 def vmt_fee(mc_obj, per_mile_fee):
     ''' adjust vehicle cost per mile to represent VMT fee
@@ -327,7 +337,35 @@ def reduce_outside_boston_veh_ownership(mc_obj, veh_decrease):
         mc_obj.pre_MC_trip_table[segment][448:md.max_zone,0:md.max_zone] += (
                    mc_obj.pre_MC_trip_table[re.sub('0Auto','wAuto',segment)][448:md.max_zone,0:md.max_zone] * veh_decrease)
         mc_obj.pre_MC_trip_table[re.sub('0Auto','wAuto',segment)][448:md.max_zone,0:md.max_zone] *= (1 - veh_decrease) 
+
+def reduce_studyarea_veh_ownership(mc_obj, veh_decrease):
+    ''' shift HH from 1+ to zero vehicles for study area only
+    
+    :param mc_obj: the mode choice object containing parameters and inputs
+    :param bveh_decrease: factor to shift study area trips from with/vehicle
+        to zero vehicle
+    '''      
+    veh_segments = list(filter(re.compile('.*_0Auto').match, list(mc_obj.pre_MC_trip_table.keys())))
+    for segment in veh_segments:
+        mc_obj.pre_MC_trip_table[segment][study_area,0:md.max_zone] += (
+                   mc_obj.pre_MC_trip_table[re.sub('0Auto','wAuto',segment)][study_area,0:md.max_zone] 
+                   * veh_decrease)
+        mc_obj.pre_MC_trip_table[re.sub('0Auto','wAuto',segment)][study_area,0:md.max_zone]  *= (1 - veh_decrease) 
+
+def reduce_outside_studyarea_veh_ownership(mc_obj, veh_decrease):
+    ''' shift HH from 1+ to zero vehicles for areas outside study area
+    
+    :param mc_obj: the mode choice object containing parameters and inputs
+    :param boston_veh_decrease: factor to shift trips from with/vehicle
+        to zero vehicle
+    '''      
+    veh_segments = list(filter(re.compile('.*_0Auto').match, list(mc_obj.pre_MC_trip_table.keys())))
+    for segment in veh_segments:
+        mc_obj.pre_MC_trip_table[segment][(~study_area),0:md.max_zone] += (
+                   mc_obj.pre_MC_trip_table[re.sub('0Auto','wAuto',segment)][(~study_area),0:md.max_zone] * veh_decrease)
+        mc_obj.pre_MC_trip_table[re.sub('0Auto','wAuto',segment)][(~study_area),0:md.max_zone] *= (1 - veh_decrease) 
  
+
 def shared_mobility(mc_obj, param_file, coeffs):
     ''' setup shared mobility scenarios
     
@@ -356,7 +394,7 @@ def trip_pricing(mc_obj, trip_price):
             if mode in param.index:
                 for asc in ['ASC_0_PK','ASC_1_PK','ASC_0_OP','ASC_1_OP']:
                     cost_coeff = param.loc[mode, 'Cost']
-                    param.loc[mode,asc] += (trip_price / mc_obj.config.AO_dict[purpose][mode]) * cost_coeff
+                    param.loc[mode,asc] += (trip_price / md.AO_dict[mode]) * cost_coeff
         param.to_excel(writer1, sheet_name = purpose)
     writer1.save()
     mc_obj.param_file = new_param_file

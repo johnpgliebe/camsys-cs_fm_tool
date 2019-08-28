@@ -74,3 +74,10 @@ def sum_unequal_length(a,b):
     else:
         a.resize(b.shape, refcheck=False)
     return a+b                  
+    
+
+def OD_slice(trip_table, O_slice, D_slice, max_zone = md.max_zone):
+    if len(O_slice) == max_zone and len(D_slice) == max_zone:
+        sliced = np.zeros((md.max_zone,md.max_zone))
+        sliced[np.outer(O_slice,D_slice)] = trip_table[np.outer(O_slice,D_slice)]
+        return sliced

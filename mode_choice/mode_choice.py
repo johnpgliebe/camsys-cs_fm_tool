@@ -22,7 +22,7 @@ class Shared_Mobility(object):
         for key in sm_params:
             setattr(self,key,sm_params[key])
             
-        self.OVTT_table = self.wait_time * np.ones((2730,2730))
+        self.OVTT_table = self.wait_time * np.ones((md.max_zone,md.max_zone))
 
 class Mode_Choice(object):
     '''Mode choice class that computes mode probabilities and calculated trips by mode.
@@ -44,7 +44,7 @@ class Mode_Choice(object):
         self.table_container = table_container(self)
         
         # these values may be updated by the scenario editor
-        self.cost_per_mile = config.cost_per_mile
+        self.cost_per_mile = md.cost_per_mile
         self.param_file = config.param_file
         
         self.start_time = time.time()

@@ -18,6 +18,7 @@ archive_path = os.path.dirname(os.path.realpath(__file__)) + "\\..\\scenarios\\"
 # skims
 #todo: move the datapath to the yaml scenario file
 data_path = r"C:\Projects\180021-CFB\CS_FM_Tool\data\2050\\"
+
 drive_skim_PK_file = data_path + 'skims\SOV_skim_AM.omx'
 drive_skim_OP_file = data_path + 'skims\SOV_skim_MD.omx'
 DAT_B_skim_PK_file = data_path + 'skims\A_DAT_for_Boat_tr_skim_AM.omx'
@@ -54,6 +55,7 @@ truck_trip_table = data_path + "truck_trips.omx"
 
 # land use
 taz_file = data_path + "SW_TAZ_2010.csv"
+taz_interstate_file = data_path + r"..\TAZ_by_interstate.csv"
 land_use_file = data_path + "Land_Use_2040.csv"
 taz_parking_file = data_path + "Land_Use_Parking_Costs.csv"
 taz_zonal_file = data_path + "TAZ_zonal_2040.csv"
@@ -63,19 +65,6 @@ purpose = 'HBSc1'
 
 # model parameter
 param_file = param_path + 'param_calib_0716.xlsx'
-
-# drive mode average occupancy
-# TODO: move to model defs
-AO_dict = {'HBW':{'DA':1,'SR2':2,'SR3+':3.5,'SM_RA':1,'SM_SH':2},
-	'HBO':{'DA':1,'SR2':2,'SM_RA':1,'SM_SH':2},
-	'NHB':{'DA':1,'SR2':2,'SM_RA':1,'SM_SH':2},
-	'HBSc1':{'DA':1,'SR2':2,'SM_RA':1,'SM_SH':2},
-	'HBSc2':{'DA':1,'SR2':2,'SM_RA':1,'SM_SH':2},
-	'HBSc3':{'DA':1,'SR2':2,'SM_RA':1,'SM_SH':2}
-	}
-
-# cost per mile
-cost_per_mile = 0.184
 
 # output path
 out_path = scen_path

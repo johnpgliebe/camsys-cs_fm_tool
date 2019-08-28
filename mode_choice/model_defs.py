@@ -2,6 +2,10 @@
 # CS FutureMobility Tool
 # See full license in LICENSE.txt.
 
+import numpy as np
+import pandas as pd
+import config
+
 peak_veh = ['0_PK','1_PK','0_OP','1_OP'] # vehicle ownership + peak: market segments used in trip tables
 drive_modes = ['DA','SR2','SR3+','SR2+']
 da_mode = ['DA']
@@ -25,3 +29,14 @@ max_zone = 2730
 
 # used for VMT summaries
 AO_dict = {'DA':1,'SR2':2,'SR2+':2,'SR3+':3.5,'SM_RA':1, 'SM_SH':2}
+
+# cost per mile
+cost_per_mile = 0.184
+
+# study area definitions
+taz = pd.read_csv(config.taz_interstate_file).sort_values(['ID_FOR_CS']).reset_index(drop = True)[0:max_zone][['TOWN','in_i95i93','in_i495','ID_FOR_CS']]
+taz = taz.merge(pd.read_csv(config.taz_file).sort_values(['ID_FOR_CS'])[0:max_zone][['ID_FOR_CS','BOSTON_NB']])
+taz['BOS_AND_NEI'] = taz['TOWN'].isin([n+',MA' for n in ['WINTHROP','CHELSEA','REVERE','SOMERVILLE','CAMBRIDGE','WATERTOWN','NEWTON',
+          'BROOKLINE','NEEDHAM','DEDHAM','MILTON','QUINCY','BOSTON']])
+taz['BOSTON'] = taz['TOWN'].str.contains('BOSTON')
+study_area = taz['BOSTON'].values
