@@ -49,12 +49,12 @@ class CS_FM_Tool():
 
         stream = open(scenario_file, 'r')
         
-        scen= yaml.load(stream)
+        scen= yaml.load(stream, Loader = yaml.FullLoader)
         self.name = scen['name']      
         self.exp_vars = scen['experiment_variables']
         
         stream = open(perf_meas_file, 'r')
-        pm= yaml.load(stream)
+        pm= yaml.load(stream, Loader = yaml.FullLoader)
         self.perf_meas = pm['performance_measures']
         
         # check to see if scenario exists and prompt to rename

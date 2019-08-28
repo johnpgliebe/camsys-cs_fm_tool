@@ -10,9 +10,12 @@ from openpyxl import load_workbook,Workbook
 from time import strftime
 import os.path
 import mode_choice.model_defs as md
-
+import mode_choice.matrix_utils as mtx
+import config
 ''' Utilities to summarize the outputs of Mode Choice '''
 
+# common TAZ data
+taz = md.taz
     
 def display_mode_share(mc_obj):
     '''
@@ -21,10 +24,10 @@ def display_mode_share(mc_obj):
     :param mc_obj: mode choice module object as defined in the IPython notebook
     '''
     # display mode share tables
-	mode_share = pd.DataFrame(None)
+    mode_share = pd.DataFrame(None)
     for purpose in ['HBW','HBO', 'NHB', 'HBSc1', 'HBSc2', 'HBSc3']:
-		mode_share = mode_share.add(pd.DataFrame({pv:{mode:(mc_obj.table_container.get_table(purpose)[pv][mode].sum()) for mode in mc_obj.table_container.get_table(purpose)[pv]} for pv in mc_obj.peak_veh}).T,
-			fill_value = 0)
+        mode_share = mode_share.add(pd.DataFrame({pv:{mode:(mc_obj.table_container.get_table(purpose)[pv][mode].sum()) for mode in mc_obj.table_container.get_table(purpose)[pv]} for pv in mc_obj.peak_veh}).T,
+            fill_value = 0)
     avg_mode_share = avg_trips_by_mode.divide(avg_trips_by_mode.sum(1),axis = 0)
 
     display(avg_mode_share.style.format("{:.2%}"))
@@ -40,10 +43,6 @@ def write_boston_neighbortown_mode_share_to_excel(mc_obj):
     '''
     
     out_excel_fn = mc_obj.config.out_path + "mode_share_bosNB_{0}.xlsx".format(strftime("%Y%m%d"))
-    taz_fn = mc_obj.config.data_path + r"..\TAZ_by_interstate.csv"
-    taz = pd.read_csv(taz_fn).sort_values(['ID_FOR_CS']).reset_index().drop(columns = ['index'])[0:md.max_zone][['TOWN']]
-    taz['BOS_AND_NEI'] = taz['TOWN'].isin([n+',MA' for n in ['WINTHROP','CHELSEA','REVERE','SOMERVILLE','CAMBRIDGE','WATERTOWN','NEWTON',
-              'BROOKLINE','NEEDHAM','DEDHAM','MILTON','QUINCY','BOSTON']])
 
     # check if file exists.
     if os.path.isfile(out_excel_fn):
@@ -59,9 +58,12 @@ def write_boston_neighbortown_mode_share_to_excel(mc_obj):
         trip_table = mc_obj.table_container.get_table(purp)
         for pv in md.peak_veh:
             for mode in trip_table[pv].keys():
-                trip_table_o = np.lib.pad(trip_table[pv][mode][taz['TOWN']=='BOSTON,MA',:][:,taz['BOS_AND_NEI']],((0,2283),(0,1886)), 'constant',constant_values=(0))
-                trip_table_d = np.lib.pad(trip_table[pv][mode][taz['BOS_AND_NEI'],:][:,taz['TOWN']=='BOSTON,MA'], ((0,1886),(0,2283)), 'constant',constant_values=(0))
-                trip_table_b = np.lib.pad(trip_table[pv][mode][taz['TOWN']=='BOSTON,MA',:][:,taz['TOWN']=='BOSTON,MA'], ((0,2283),(0,2283)), 'constant',constant_values=(0))
+            #study area zones might not start at zone 0 and could have discontinous TAZ IDs
+                
+                trip_table_o = mtx.OD_slice(trip_table[pv][mode], O_slice = taz['BOSTON'], D_slice = taz['BOS_AND_NEI'])
+                trip_table_d = mtx.OD_slice(trip_table[pv][mode], taz['BOS_AND_NEI'], taz['BOSTON'])
+                trip_table_b = mtx.OD_slice(trip_table[pv][mode], taz['BOSTON'], taz['BOSTON'])
+                
                 trip_table_bos = trip_table_o + trip_table_d - trip_table_b
                 mode_share.loc[mode,pv] = trip_table_bos.sum()
 
@@ -86,9 +88,6 @@ def write_boston_mode_share_to_excel(mc_obj):
     '''
     
     out_excel_fn = mc_obj.config.out_path + "mode_share_Boston_{0}.xlsx".format(strftime("%Y%m%d"))
-    taz_fn = mc_obj.config.data_path + r"..\TAZ_by_interstate.csv"
-    taz = pd.read_csv(taz_fn).sort_values(['ID_FOR_CS']).reset_index().drop(columns = ['index'])[0:md.max_zone][['TOWN']]
-
     # check if file exists.
     if os.path.isfile(out_excel_fn):
         book = load_workbook(out_excel_fn)
@@ -103,9 +102,11 @@ def write_boston_mode_share_to_excel(mc_obj):
         trip_table = mc_obj.table_container.get_table(purp)
         for pv in md.peak_veh:
             for mode in trip_table[pv].keys():
-                trip_table_o = np.lib.pad(trip_table[pv][mode][taz['TOWN']=='BOSTON,MA',:],((0,2283),(0,0)), 'constant',constant_values=(0))
-                trip_table_d = np.lib.pad(trip_table[pv][mode][:][:,taz['TOWN']=='BOSTON,MA'], ((0,0),(0,2283)), 'constant',constant_values=(0))
-                trip_table_b = np.lib.pad(trip_table[pv][mode][taz['TOWN']=='BOSTON,MA',:][:,taz['TOWN']=='BOSTON,MA'], ((0,2283),(0,2283)), 'constant',constant_values=(0))
+            
+                trip_table_o = mtx.OD_slice(trip_table[pv][mode], O_slice = taz['BOSTON'], D_slice = np.ones(md.max_zone).astype(bool))
+                trip_table_d = mtx.OD_slice(trip_table[pv][mode], np.ones(md.max_zone).astype(bool), taz['BOSTON'])
+                trip_table_b = mtx.OD_slice(trip_table[pv][mode], taz['BOSTON'], taz['BOSTON'])
+            
                 trip_table_bos = trip_table_o + trip_table_d - trip_table_b
                 mode_share.loc[mode,pv] = trip_table_bos.sum()
 
@@ -238,7 +239,7 @@ def sm_vmt_by_neighborhood(mc_obj, out_fn = None, by = None, sm_mode = 'SM_RA'):
                         vmt_table['peak'] = peak
                         vmt_table['veh_own'] = veh_own
                         vmt_table['purpose'] = purpose
-                        vmt_master_table = vmt_master_table.append(vmt_table)
+                        vmt_master_table = vmt_master_table.append(vmt_table, sort = True)
         
         if by == None:
             vmt_summary = vmt_master_table.groupby('BOSTON_NB').sum()
@@ -294,7 +295,7 @@ def vmt_by_neighborhood(mc_obj, out_fn = None, by = None):
                         vmt_table['peak'] = peak
                         vmt_table['veh_own'] = veh_own
                         vmt_table['purpose'] = purpose
-                        vmt_master_table = vmt_master_table.append(vmt_table)
+                        vmt_master_table = vmt_master_table.append(vmt_table, sort = True)
         
         if by == None:
             vmt_summary = vmt_master_table.groupby('BOSTON_NB').sum()
@@ -347,7 +348,7 @@ def pmt_by_neighborhood(mc_obj, out_fn = None, by = None):
                         pmt_table['peak'] = peak
                         pmt_table['veh_own'] = veh_own
                         pmt_table['purpose'] = purpose
-                        pmt_master_table = pmt_master_table.append(pmt_table)
+                        pmt_master_table = pmt_master_table.append(pmt_table, sort = True)
         
         if by == None:
             pmt_summary = pmt_master_table.groupby('BOSTON_NB').sum()
@@ -401,7 +402,7 @@ def act_pmt_by_neighborhood(mc_obj, out_fn = None, by = None):
                         pmt_table['peak'] = peak
                         pmt_table['veh_own'] = veh_own
                         pmt_table['purpose'] = purpose
-                        pmt_master_table = pmt_master_table.append(pmt_table)
+                        pmt_master_table = pmt_master_table.append(pmt_table, sort = True)
         
         if by == None:
             pmt_summary = pmt_master_table.groupby('BOSTON_NB').sum()
@@ -452,7 +453,7 @@ def sm_trips_by_neighborhood(mc_obj, out_fn = None, by = None, sm_mode = 'SM_RA'
                         trp_table['peak'] = peak
                         trp_table['veh_own'] = veh_own
                         trp_table['purpose'] = purpose
-                        trp_master_table = trp_master_table.append(trp_table)
+                        trp_master_table = trp_master_table.append(trp_table, sort = True)
         
         if by == None:
             trp_summary = trp_master_table.groupby('BOSTON_NB').sum()
@@ -503,7 +504,7 @@ def trips_by_neighborhood(mc_obj, out_fn = None, by = None):
                         trp_table['peak'] = peak
                         trp_table['veh_own'] = veh_own
                         trp_table['purpose'] = purpose
-                        trp_master_table = trp_master_table.append(trp_table)
+                        trp_master_table = trp_master_table.append(trp_table, sort = True)
         
         if by == None:
             trp_summary = trp_master_table.groupby('BOSTON_NB').sum()
@@ -561,7 +562,7 @@ def mode_share_by_neighborhood(mc_obj, out_fn = None, by = None):
                         trips['veh_own'] = veh_own
                         trips['purpose'] = purpose
                         
-                        share_master_table = share_master_table.append(trips.reset_index())
+                        share_master_table = share_master_table.append(trips.reset_index(), sort = True)
         
         if by == None:
             trip_summary = share_master_table.groupby('BOSTON_NB').sum()
@@ -595,18 +596,13 @@ def mode_share_by_neighborhood(mc_obj, out_fn = None, by = None):
 def __sm_compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighboring', sm_mode='SM_RA'):
     ''' Computing function used by write_summary_by_subregion(), does not produce outputs'''
 
-    taz_fn = mc_obj.config.data_path + r"..\TAZ_by_interstate.csv"
     if metric.lower() not in ('vmt','pmt','mode share','trip', 'pmt_act'):
         print('Only supports trip, VMT, PMT and mode share calculations.')
         return
     if subregion.lower() not in ('boston','neighboring','i93','i495','region'):
         print('Only supports within boston, "neighboring" for towns neighboring Boston, I93, I495 or Region.')
         return
-    
-    taz = pd.read_csv(taz_fn).sort_values(['ID_FOR_CS']).reset_index().drop(columns = ['index'])[0:md.max_zone][['TOWN','in_i95i93','in_i495']]
-    taz['BOS_AND_NEI'] = taz['TOWN'].isin([n+',MA' for n in ['WINTHROP','CHELSEA','REVERE','SOMERVILLE','CAMBRIDGE','WATERTOWN','NEWTON',
-              'BROOKLINE','NEEDHAM','DEDHAM','MILTON','QUINCY','BOSTON']])
-    taz['BOSTON'] = taz['TOWN'].isin([n+',MA' for n in ['BOSTON']])
+
     subregion_dict = {'boston':'BOSTON','neighboring':'BOS_AND_NEI','i93':'in_i95i93','i495':'in_i495'}
     
             
@@ -681,8 +677,6 @@ def __sm_compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighbo
 def __compute_metric_by_zone(mc_obj,metric = 'VMT'):
     ''' Computing function used by write_summary_by_subregion(), does not produce outputs'''
             
-    taz_fn = mc_obj.config.data_path + r"..\TAZ_by_interstate.csv"
-    taz = pd.read_csv(taz_fn).sort_values(['ID_FOR_CS']).reset_index().drop(columns = ['index'])[0:md.max_zone][['TOWN','in_i95i93','in_i495']]
     if metric.lower() == 'vmt':
         skim_dict = {'PK': mc_obj.drive_skim_PK,'OP':mc_obj.drive_skim_OP}
         vmt_table = np.zeros((md.max_zone,md.max_zone))
@@ -769,7 +763,7 @@ def __compute_metric_by_zone(mc_obj,metric = 'VMT'):
 def __compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighboring'):
     ''' Computing function used by write_summary_by_subregion(), does not produce outputs'''
 
-    taz_fn = mc_obj.config.data_path + r"..\TAZ_by_interstate.csv"
+
     if metric.lower() not in ('vmt','pmt','mode share','trip', 'pmt_act'):
         print('Only supports trip, VMT, PMT and mode share calculations.')
         return
@@ -777,10 +771,7 @@ def __compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighborin
         print('Only supports within boston, "neighboring" for towns neighboring Boston, I93, I495 or Region.')
         return
     
-    taz = pd.read_csv(taz_fn).sort_values(['ID_FOR_CS']).reset_index().drop(columns = ['index'])[0:md.max_zone][['TOWN','in_i95i93','in_i495']]
-    taz['BOS_AND_NEI'] = taz['TOWN'].isin([n+',MA' for n in ['WINTHROP','CHELSEA','REVERE','SOMERVILLE','CAMBRIDGE','WATERTOWN','NEWTON',
-              'BROOKLINE','NEEDHAM','DEDHAM','MILTON','QUINCY','BOSTON']])
-    taz['BOSTON'] = taz['TOWN'].isin([n+',MA' for n in ['BOSTON']])
+
     subregion_dict = {'boston':'BOSTON','neighboring':'BOS_AND_NEI','i93':'in_i95i93','i495':'in_i495'}
     
             
@@ -976,11 +967,7 @@ def __trips_to_from_boston(taz, mode, tripsum_table):
     return zone_o, zone_d
 
 def trips_by_mode(mc_obj, mode='all'):
-    
-    taz_fn = mc_obj.config.data_path + r"..\TAZ_by_interstate.csv"
-    taz = pd.read_csv(taz_fn).sort_values(['ID_FOR_CS']).reset_index().drop(columns = ['index'])[0:md.max_zone][['TOWN','ID_FOR_CS']]
-    taz['BOSTON'] = taz['TOWN'].isin([n+',MA' for n in ['BOSTON']])
-    
+
     auto_trip = np.zeros((md.max_zone,md.max_zone))
     transit_trip = np.zeros((md.max_zone,md.max_zone))
     nm_trip = np.zeros((md.max_zone,md.max_zone))
@@ -1040,10 +1027,6 @@ def __trips_to_region(mask, taz, mode, tripsum_table):
 
 def productions_by_region(mc_obj, region='all', cordon_area=[]):
     
-    taz_fn = mc_obj.config.data_path + r"..\TAZ_by_interstate.csv"
-    taz = pd.read_csv(taz_fn).sort_values(['ID_FOR_CS']).reset_index().drop(
-            columns = ['index'])[0:md.max_zone][['ID_FOR_CS','TOWN','BOSTON_NB_TOWN']]
-    #taz['BOSTON'] = taz['TOWN'].isin([n+',MA' for n in ['BOSTON']])
     
     auto_trip = np.zeros((md.max_zone,md.max_zone))
     da_trip = np.zeros((md.max_zone,md.max_zone))
@@ -1098,7 +1081,7 @@ def productions_by_region(mc_obj, region='all', cordon_area=[]):
         mask = (taz['TOWN']=='BOSTON,MA').values * 1 #[1]*447 + [0]*(md.max_zone - 447)
         outfile = 'trip_p_to_boston.csv'       
     elif region=='cordon':
-        mask = taz['BOSTON_NB_TOWN'].isin(cordon_area).values * 1
+        mask = taz['BOSTON_NB'].isin(cordon_area).values * 1
         outfile = 'trip_p_to_cordon.csv'           
     
        
@@ -1201,7 +1184,7 @@ def transit_ridership(mc_obj, by='all'):
                         ridership['region'] += (mc_obj.table_container.get_table(purpose)[f'{veh_own}_{peak}'][mode][:][:,(taz_cvg['TOWN']=='BOSTON,MA')].sum() + 
                                                 mc_obj.table_container.get_table(purpose)[f'{veh_own}_{peak}'][mode][(taz_cvg['TOWN']=='BOSTON,MA'),:].sum()  - boston_ii)
                         ridership['peak'] = peak
-                    ridership_master = ridership_master.append(ridership.reset_index())
+                    ridership_master = ridership_master.append(ridership.reset_index(), sort = True)
     #ridership_summary = ridership_master.groupby(['peak']).sum()
     # calculate ridership
     ridership_master.groupby('peak').sum().to_csv(mc_obj.config.out_path + 'transit_ridership_summary.csv')

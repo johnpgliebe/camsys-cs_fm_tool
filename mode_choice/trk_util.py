@@ -15,7 +15,7 @@ def __mt_prod_attr_nhood(mc_obj, trip_table, skim): # miles traveled. For VMT an
     prod = pd.DataFrame(np.sum(mt_total,axis = 1)/2, columns = ['Production'])
     attr = pd.DataFrame(np.sum(mt_total,axis = 0)/2, columns = ['Attraction'])
     
-    towns = mc_obj.taz_lu.sort_values('TAZ_ID').iloc[0:2730]
+    towns = mc_obj.taz_lu.sort_values('TAZ_ID').iloc[0:md.max_zone]
     mt_taz = pd.concat([towns[['TAZ_ID','BOSTON_NB']],prod,attr],axis = 1,join = 'inner')
     mt_taz.index.names=['Boston Neighborhood']
     return mt_taz.groupby(['BOSTON_NB']).sum()[['Production','Attraction']].reset_index()
@@ -27,7 +27,7 @@ def __trip_prod_attr_nhood(mc_obj, trip_table):
     prod = pd.DataFrame(np.sum(mt_total,axis = 1), columns = ['Production'])
     attr = pd.DataFrame(np.sum(mt_total,axis = 0), columns = ['Attraction'])
     
-    towns = mc_obj.taz_lu.sort_values('TAZ_ID').iloc[0:2730]
+    towns = mc_obj.taz_lu.sort_values('TAZ_ID').iloc[0:md.max_zone]
     mt_taz = pd.concat([towns[['TAZ_ID','BOSTON_NB']],prod,attr],axis = 1,join = 'inner')
     mt_taz.index.names=['Boston Neighborhood']
     return mt_taz.groupby(['BOSTON_NB']).sum()[['Production','Attraction']].reset_index()
@@ -47,10 +47,10 @@ def trip_by_neighborhood(mc_obj, out_fn = None):
     master_table = pd.DataFrame(columns = ['Production','Attraction','truck'])
     for truck in md.truck_categories:
         if trk_trip[truck]:
-            trk_trip_table = np.array(trk_trip[truck])[0:2730,0:2730]
+            trk_trip_table = np.array(trk_trip[truck])[0:md.max_zone,0:md.max_zone]
             trip_table = __trip_prod_attr_nhood(mc_obj,trk_trip_table)
             trip_table['truck'] = truck
-            master_table = master_table.append(trip_table)
+            master_table = master_table.append(trip_table, sort = True)
     trip_summary = pd.concat([
             master_table.groupby(['truck','BOSTON_NB']).sum().loc[truck] 
             for truck in md.truck_categories], axis = 1, keys = md.truck_categories)
@@ -72,10 +72,10 @@ def vmt_by_neighborhood(mc_obj, out_fn = None):
     vmt_master_table = pd.DataFrame(columns = ['Production','Attraction','truck'])
     for truck in md.truck_categories:
         if trk_trip[truck]:
-            trk_trip_table = np.array(trk_trip[truck])[0:2730,0:2730]
+            trk_trip_table = np.array(trk_trip[truck])[0:md.max_zone,0:md.max_zone]
             vmt_table = __mt_prod_attr_nhood(mc_obj,trk_trip_table,mc_obj.drive_skim_PK)
             vmt_table['truck'] = truck
-            vmt_master_table = vmt_master_table.append(vmt_table)
+            vmt_master_table = vmt_master_table.append(vmt_table, sort = True)
     vmt_summary = pd.concat([
             vmt_master_table.groupby(['truck','BOSTON_NB']).sum().loc[truck] 
             for truck in md.truck_categories], axis = 1, keys = md.truck_categories)
@@ -93,10 +93,10 @@ def compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighboring'
         print('Only supports within boston, "neighboring" for towns neighboring Boston, I93, I495 or Region.')
         return
     
-    taz = pd.read_csv(taz_fn).sort_values(['ID_FOR_CS']).reset_index().drop(columns = ['index'])[0:2730][['TOWN','in_i95i93','in_i495']]
+    taz = pd.read_csv(taz_fn).sort_values(['ID_FOR_CS']).reset_index(drop = True)[0:md.max_zone][['TOWN','in_i95i93','in_i495']]
     taz['BOS_AND_NEI'] = taz['TOWN'].isin([n+',MA' for n in ['WINTHROP','CHELSEA','REVERE','SOMERVILLE','CAMBRIDGE','WATERTOWN','NEWTON',
               'BROOKLINE','NEEDHAM','DEDHAM','MILTON','QUINCY','BOSTON']])
-    taz['BOSTON'] = taz['TOWN'].isin([n+',MA' for n in ['BOSTON']])
+    taz['BOSTON'] = taz['TOWN'].str.contains('BOSTON')
     subregion_dict = {'boston':'BOSTON','neighboring':'BOS_AND_NEI','i93':'in_i95i93','i495':'in_i495'}
     
     type_table = dict(zip(md.truck_categories,[0,0,0,0]))
@@ -106,14 +106,14 @@ def compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighboring'
             field = subregion_dict[subregion.lower()]
             for truck in md.truck_categories:
                 if trk_trip[truck]:
-                    trk_trip_table = np.array(trk_trip[truck])[0:2730,0:2730]
+                    trk_trip_table = np.array(trk_trip[truck])[0:md.max_zone,0:md.max_zone]
                     trip_table = trk_trip_table * mc_obj.drive_skim_PK['Length (Skim)']
                     trips = trip_table[taz['TOWN']=='BOSTON,MA',:][:, taz[field]== True].sum() + trip_table[taz[field]== True,:][:,taz['TOWN']=='BOSTON,MA'].sum()
                     type_table[truck] = trips/2
         elif subregion.lower() == 'region':
             for truck in md.truck_categories:
                 if trk_trip[truck]:
-                    trk_trip_table = np.array(trk_trip[truck])[0:2730,0:2730]
+                    trk_trip_table = np.array(trk_trip[truck])[0:md.max_zone,0:md.max_zone]
                     trip_table = trk_trip_table * mc_obj.drive_skim_PK['Length (Skim)'] 
                     boston_ii_trips = trip_table[taz['TOWN']=='BOSTON,MA',:][:,taz['TOWN']=='BOSTON,MA'].sum()
                     trips = trip_table[taz['TOWN']=='BOSTON,MA',:][:].sum() + trip_table[:][:,taz['TOWN']=='BOSTON,MA'].sum()
@@ -123,7 +123,7 @@ def compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighboring'
             field = subregion_dict[subregion.lower()]
             for truck in md.truck_categories:
                 if trk_trip[truck]:
-                    trk_trip_table = np.array(trk_trip[truck])[0:2730,0:2730]
+                    trk_trip_table = np.array(trk_trip[truck])[0:md.max_zone,0:md.max_zone]
                     trip_table = trk_trip_table
                     boston_ii_trips = trip_table[taz['TOWN']=='BOSTON,MA',:][:,taz['TOWN']=='BOSTON,MA'].sum()
                     trips = trip_table[taz['TOWN']=='BOSTON,MA',:][:, taz[field]== True].sum() + trip_table[taz[field]== True,:][:,taz['TOWN']=='BOSTON,MA'].sum() - boston_ii_trips
@@ -131,7 +131,7 @@ def compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighboring'
         elif subregion.lower() == 'region':
             for truck in md.truck_categories:
                 if trk_trip[truck]:
-                    trk_trip_table = np.array(trk_trip[truck])[0:2730,0:2730]
+                    trk_trip_table = np.array(trk_trip[truck])[0:md.max_zone,0:md.max_zone]
                     trip_table = trk_trip_table
                     boston_ii_trips = trip_table[taz['TOWN']=='BOSTON,MA',:][:,taz['TOWN']=='BOSTON,MA'].sum()
                     trips = trip_table[taz['TOWN']=='BOSTON,MA',:][:].sum() + trip_table[:][:,taz['TOWN']=='BOSTON,MA'].sum() - boston_ii_trips

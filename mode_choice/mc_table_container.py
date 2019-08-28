@@ -22,10 +22,10 @@ class table_container(object):
             return self.container[purpose]
         else:
             return None
-	
-	def aggregate_by_mode_segment(self,mode, pv):
-		trip_sum = np.zeros((2730,2730))
-		for purpose in ['HBW', 'HBO', 'NHB', 'HBSc1', 'HBSc2', 'HBSc3']:
-			try: trip_sum += self.container[purpose][pv][mode]
-			except: pass
-		return trip_sum
+
+    def aggregate_by_mode_segment(self,mode, pv):
+        trip_sum = np.zeros((md.max_zone,md.max_zone))
+        for purpose in ['HBW', 'HBO', 'NHB', 'HBSc1', 'HBSc2', 'HBSc3']:
+            try: trip_sum += self.container[purpose][pv][mode]
+            except: pass
+        return trip_sum
