@@ -14,8 +14,6 @@ import mode_choice.matrix_utils as mtx
 import config
 ''' Utilities to summarize the outputs of Mode Choice '''
 
-# common TAZ data
-taz = md.taz
     
 def display_mode_share(mc_obj):
     '''
@@ -103,9 +101,9 @@ def write_boston_mode_share_to_excel(mc_obj):
         for pv in md.peak_veh:
             for mode in trip_table[pv].keys():
             
-                trip_table_o = mtx.OD_slice(trip_table[pv][mode], O_slice = taz['BOSTON'], D_slice = np.ones(md.max_zone).astype(bool))
-                trip_table_d = mtx.OD_slice(trip_table[pv][mode], np.ones(md.max_zone).astype(bool), taz['BOSTON'])
-                trip_table_b = mtx.OD_slice(trip_table[pv][mode], taz['BOSTON'], taz['BOSTON'])
+                trip_table_o = mtx.OD_slice(trip_table[pv][mode], O_slice = md.taz['BOSTON'], D_slice = np.ones(md.max_zone).astype(bool))
+                trip_table_d = mtx.OD_slice(trip_table[pv][mode], np.ones(md.max_zone).astype(bool), md.taz['BOSTON'])
+                trip_table_b = mtx.OD_slice(trip_table[pv][mode], md.taz['BOSTON'], md.taz['BOSTON'])
             
                 trip_table_bos = trip_table_o + trip_table_d - trip_table_b
                 mode_share.loc[mode,pv] = trip_table_bos.sum()
@@ -618,14 +616,14 @@ def __sm_compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighbo
                         
         if subregion.lower() in subregion_dict:
             field = subregion_dict[subregion.lower()]
-            boston_o_auto_vmt = vmt_table[taz['TOWN']=='BOSTON,MA',:][:, taz[field]== True]
-            boston_d_auto_vmt = vmt_table[taz[field]== True,:][:,taz['TOWN']=='BOSTON,MA']
-            town_definition = taz[taz[field]== True]
+            boston_o_auto_vmt = vmt_table[md.taz['TOWN']=='BOSTON,MA',:][:, md.taz[field]== True]
+            boston_d_auto_vmt = vmt_table[md.taz[field]== True,:][:,md.taz['TOWN']=='BOSTON,MA']
+            town_definition = md.taz[md.taz[field]== True]
         
         elif subregion.lower() == 'region':
-            boston_o_auto_vmt = vmt_table[taz['TOWN']=='BOSTON,MA',:]
-            boston_d_auto_vmt = vmt_table[:][:,taz['TOWN']=='BOSTON,MA']
-            town_definition = taz   
+            boston_o_auto_vmt = vmt_table[md.taz['TOWN']=='BOSTON,MA',:]
+            boston_d_auto_vmt = vmt_table[:][:,md.taz['TOWN']=='BOSTON,MA']
+            town_definition = md.taz   
         
         zone_vmt_daily_o = pd.DataFrame(np.sum(boston_o_auto_vmt,axis=1)/2 ,columns=["VMT"])
         zone_vmt_daily_d = pd.DataFrame(np.sum(boston_d_auto_vmt,axis=0)/2 ,columns=["VMT"])
@@ -652,14 +650,14 @@ def __sm_compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighbo
                         
         if subregion.lower() in subregion_dict:
             field = subregion_dict[subregion.lower()]
-            boston_o_trip = tripsum_table[taz['TOWN']=='BOSTON,MA',:][:, taz[field]== True]
-            boston_d_trip = tripsum_table[taz[field]== True,:][:,taz['TOWN']=='BOSTON,MA']
-            town_definition = taz[taz[field]== True]
+            boston_o_trip = tripsum_table[md.taz['TOWN']=='BOSTON,MA',:][:, md.taz[field]== True]
+            boston_d_trip = tripsum_table[md.taz[field]== True,:][:,md.taz['TOWN']=='BOSTON,MA']
+            town_definition = md.taz[md.taz[field]== True]
         
         elif subregion.lower() == 'region':
-            boston_o_trip = tripsum_table[taz['TOWN']=='BOSTON,MA',:]
-            boston_d_trip = tripsum_table[:][:,taz['TOWN']=='BOSTON,MA']
-            town_definition = taz   
+            boston_o_trip = tripsum_table[md.taz['TOWN']=='BOSTON,MA',:]
+            boston_d_trip = tripsum_table[:][:,md.taz['TOWN']=='BOSTON,MA']
+            town_definition = md.taz   
         
         zone_daily_o = pd.DataFrame(np.sum(boston_o_trip,axis=1) ,columns=["trips"])
         zone_daily_d = pd.DataFrame(np.sum(boston_d_trip,axis=0) ,columns=["trips"])
@@ -688,9 +686,9 @@ def __compute_metric_by_zone(mc_obj,metric = 'VMT'):
                         trip_table = sum([mc_obj.table_container.get_table(purpose)[f'{veh_own}_{peak}'][mode] / md.AO_dict[mode] for mode in md.auto_modes if mode in drive_modes])
                         vmt_table += trip_table * skim_dict[peak]['Length (Skim)']
                         
-        boston_o_auto_vmt = vmt_table[taz['TOWN']=='BOSTON,MA',:]
-        boston_d_auto_vmt = vmt_table[:][:,taz['TOWN']=='BOSTON,MA']
-        town_definition = taz   
+        boston_o_auto_vmt = vmt_table[md.taz['TOWN']=='BOSTON,MA',:]
+        boston_d_auto_vmt = vmt_table[:][:,md.taz['TOWN']=='BOSTON,MA']
+        town_definition = md.taz   
         
         zone_vmt_daily_o = pd.DataFrame(np.sum(boston_o_auto_vmt,axis=0)/2 ,columns=["VMT"])
         zone_vmt_daily_d = pd.DataFrame(np.sum(boston_d_auto_vmt,axis=1)/2 ,columns=["VMT"])
@@ -716,9 +714,9 @@ def __compute_metric_by_zone(mc_obj,metric = 'VMT'):
                         
                         pmt_table += trip_table * skim_dict[peak]['Length (Skim)']
         
-        boston_o_auto_pmt = pmt_table[taz['TOWN']=='BOSTON,MA',:]
-        boston_d_auto_pmt = pmt_table[:][:,taz['TOWN']=='BOSTON,MA']
-        town_definition = taz   
+        boston_o_auto_pmt = pmt_table[md.taz['TOWN']=='BOSTON,MA',:]
+        boston_d_auto_pmt = pmt_table[:][:,md.taz['TOWN']=='BOSTON,MA']
+        town_definition = md.taz   
         
         zone_pmt_daily_o = pd.DataFrame(np.sum(boston_o_auto_pmt,axis=0)/2 ,columns=["VMT"])
         zone_pmt_daily_d = pd.DataFrame(np.sum(boston_d_auto_pmt,axis=1)/2 ,columns=["VMT"])
@@ -788,14 +786,14 @@ def __compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighborin
                         
         if subregion.lower() in subregion_dict:
             field = subregion_dict[subregion.lower()]
-            boston_o_auto_vmt = vmt_table[taz['TOWN']=='BOSTON,MA',:][:, taz[field]== True]
-            boston_d_auto_vmt = vmt_table[taz[field]== True,:][:,taz['TOWN']=='BOSTON,MA']
-            town_definition = taz[taz[field]== True]
+            boston_o_auto_vmt = vmt_table[md.taz['TOWN']=='BOSTON,MA',:][:, md.taz[field]== True]
+            boston_d_auto_vmt = vmt_table[md.taz[field]== True,:][:,md.taz['TOWN']=='BOSTON,MA']
+            town_definition = md.taz[md.taz[field]== True]
         
         elif subregion.lower() == 'region':
-            boston_o_auto_vmt = vmt_table[taz['TOWN']=='BOSTON,MA',:]
-            boston_d_auto_vmt = vmt_table[:][:,taz['TOWN']=='BOSTON,MA']
-            town_definition = taz   
+            boston_o_auto_vmt = vmt_table[md.taz['TOWN']=='BOSTON,MA',:]
+            boston_d_auto_vmt = vmt_table[:][:,md.taz['TOWN']=='BOSTON,MA']
+            town_definition = md.taz   
         
         zone_vmt_daily_o = pd.DataFrame(np.sum(boston_o_auto_vmt,axis=1)/2 ,columns=["VMT"])
         zone_vmt_daily_d = pd.DataFrame(np.sum(boston_d_auto_vmt,axis=0)/2 ,columns=["VMT"])
@@ -828,14 +826,14 @@ def __compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighborin
         
         if subregion.lower() in subregion_dict:
             field = subregion_dict[subregion.lower()]
-            boston_o_auto_pmt = pmt_table[taz['TOWN']=='BOSTON,MA',:][:, taz[field]== True]
-            boston_d_auto_pmt = pmt_table[taz[field]== True,:][:,taz['TOWN']=='BOSTON,MA']
-            town_definition = taz[taz[field]== True]
+            boston_o_auto_pmt = pmt_table[md.taz['TOWN']=='BOSTON,MA',:][:, md.taz[field]== True]
+            boston_d_auto_pmt = pmt_table[md.taz[field]== True,:][:,md.taz['TOWN']=='BOSTON,MA']
+            town_definition = md.taz[md.taz[field]== True]
         
         elif subregion.lower() == 'region':
-            boston_o_auto_pmt = pmt_table[taz['TOWN']=='BOSTON,MA',:]
-            boston_d_auto_pmt = pmt_table[:][:,taz['TOWN']=='BOSTON,MA']
-            town_definition = taz
+            boston_o_auto_pmt = pmt_table[md.taz['TOWN']=='BOSTON,MA',:]
+            boston_d_auto_pmt = pmt_table[:][:,md.taz['TOWN']=='BOSTON,MA']
+            town_definition = md.taz
         
         zone_pmt_daily_o = pd.DataFrame(np.sum(boston_o_auto_pmt,axis=1)/2 ,columns=["PMT"])
         zone_pmt_daily_d = pd.DataFrame(np.sum(boston_d_auto_pmt,axis=0)/2 ,columns=["PMT"])
@@ -868,14 +866,14 @@ def __compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighborin
         
         if subregion.lower() in subregion_dict:
             field = subregion_dict[subregion.lower()]
-            boston_o_auto_pmt = pmt_table[taz['TOWN']=='BOSTON,MA',:][:, taz[field]== True]
-            boston_d_auto_pmt = pmt_table[taz[field]== True,:][:,taz['TOWN']=='BOSTON,MA']
-            town_definition = taz[taz[field]== True]
+            boston_o_auto_pmt = pmt_table[md.taz['TOWN']=='BOSTON,MA',:][:, md.taz[field]== True]
+            boston_d_auto_pmt = pmt_table[md.taz[field]== True,:][:,md.taz['TOWN']=='BOSTON,MA']
+            town_definition = md.taz[md.taz[field]== True]
         
         elif subregion.lower() == 'region':
-            boston_o_auto_pmt = pmt_table[taz['TOWN']=='BOSTON,MA',:]
-            boston_d_auto_pmt = pmt_table[:][:,taz['TOWN']=='BOSTON,MA']
-            town_definition = taz
+            boston_o_auto_pmt = pmt_table[md.taz['TOWN']=='BOSTON,MA',:]
+            boston_d_auto_pmt = pmt_table[:][:,md.taz['TOWN']=='BOSTON,MA']
+            town_definition = md.taz
         
         zone_pmt_daily_o = pd.DataFrame(np.sum(boston_o_auto_pmt,axis=1)/2 ,columns=["PMT"])
         zone_pmt_daily_d = pd.DataFrame(np.sum(boston_d_auto_pmt,axis=0)/2 ,columns=["PMT"])
@@ -932,14 +930,14 @@ def __compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighborin
                         
         if subregion.lower() in subregion_dict:
             field = subregion_dict[subregion.lower()]
-            boston_o_trip = tripsum_table[taz['TOWN']=='BOSTON,MA',:][:, taz[field]== True]
-            boston_d_trip = tripsum_table[taz[field]== True,:][:,taz['TOWN']=='BOSTON,MA']
-            town_definition = taz[taz[field]== True]
+            boston_o_trip = tripsum_table[md.taz['TOWN']=='BOSTON,MA',:][:, md.taz[field]== True]
+            boston_d_trip = tripsum_table[md.taz[field]== True,:][:,md.taz['TOWN']=='BOSTON,MA']
+            town_definition = md.taz[md.taz[field]== True]
         
         elif subregion.lower() == 'region':
-            boston_o_trip = tripsum_table[taz['TOWN']=='BOSTON,MA',:]
-            boston_d_trip = tripsum_table[:][:,taz['TOWN']=='BOSTON,MA']
-            town_definition = taz   
+            boston_o_trip = tripsum_table[md.taz['TOWN']=='BOSTON,MA',:]
+            boston_d_trip = tripsum_table[:][:,md.taz['TOWN']=='BOSTON,MA']
+            town_definition = md.taz   
         
         zone_daily_o = pd.DataFrame(np.sum(boston_o_trip,axis=1) ,columns=["trips"])
         zone_daily_d = pd.DataFrame(np.sum(boston_d_trip,axis=0) ,columns=["trips"])
@@ -995,10 +993,10 @@ def trips_by_mode(mc_obj, mode='all'):
                     sm_trip += trips                        
                     
     
-    auto_o, auto_d = __trips_to_from_boston(taz, "auto", auto_trip)
-    transit_o, transit_d = __trips_to_from_boston(taz, "transit", transit_trip)
-    nm_o, nm_d = __trips_to_from_boston(taz, "nm", nm_trip)
-    sm_o, sm_d = __trips_to_from_boston(taz, "sm", sm_trip)
+    auto_o, auto_d = __trips_to_from_boston(md.taz, "auto", auto_trip)
+    transit_o, transit_d = __trips_to_from_boston(md.taz, "transit", transit_trip)
+    nm_o, nm_d = __trips_to_from_boston(md.taz, "nm", nm_trip)
+    sm_o, sm_d = __trips_to_from_boston(md.taz, "sm", sm_trip)
     
     trips_o = auto_o.to_frame().join(transit_o)
     trips_o = trips_o.join(nm_o)
@@ -1085,14 +1083,14 @@ def productions_by_region(mc_obj, region='all', cordon_area=[]):
         outfile = 'trip_p_to_cordon.csv'           
     
        
-    auto_d = __trips_to_region(mask, taz, "auto", auto_trip)
-    da_d = __trips_to_region(mask, taz, "da", da_trip)
-    sr_d = __trips_to_region(mask, taz, "sr", sr_trip)
-    wat_d = __trips_to_region(mask, taz, "wat", wat_trip)
-    dat_d = __trips_to_region(mask, taz, "dat", dat_trip)
-    nm_d = __trips_to_region(mask, taz, "nm", nm_trip)
-    smra_d = __trips_to_region(mask, taz, "smra", smra_trip)
-    smsh_d = __trips_to_region(mask, taz, "smsh", smsh_trip)
+    auto_d = __trips_to_region(mask, md.taz, "auto", auto_trip)
+    da_d = __trips_to_region(mask, md.taz, "da", da_trip)
+    sr_d = __trips_to_region(mask, md.taz, "sr", sr_trip)
+    wat_d = __trips_to_region(mask, md.taz, "wat", wat_trip)
+    dat_d = __trips_to_region(mask, md.taz, "dat", dat_trip)
+    nm_d = __trips_to_region(mask, md.taz, "nm", nm_trip)
+    smra_d = __trips_to_region(mask, md.taz, "smra", smra_trip)
+    smsh_d = __trips_to_region(mask, md.taz, "smsh", smsh_trip)
 
     trips_d = auto_d.join(da_d)
     trips_d = trips_d.join(sr_d)

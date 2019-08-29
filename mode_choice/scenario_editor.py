@@ -79,7 +79,7 @@ def compact_land_use(mc_obj, zone_factor_file, ):
     
     zone_factors = pd.read_csv(mc_obj.config.param_path + zone_factor_file).sort_values('ID')
     
-    all_taz = pd.read_csv(mc_obj.config.taz_file)
+    all_taz = pd.read_csv(mc_obj.data_paths['taz_file'])
     taz_factors = all_taz[['ID','TOWN']].merge(zone_factors,on = 'ID',how = 'left').fillna(1)[:md.max_zone]
 
         
