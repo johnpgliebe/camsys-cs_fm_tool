@@ -8,8 +8,8 @@ import openmatrix as omx
 import warnings
 import tables
 import time
-#from IPython.display import display
-#from openpyxl import load_workbook
+import yaml
+
 import mode_choice.matrix_utils as mtx
 import mode_choice.model_defs as md
 from mode_choice.mc_table_container import table_container
@@ -38,14 +38,17 @@ class Mode_Choice(object):
     .. todo:: set skim names and market segments dynamically based on model_defs.py
     
     '''
-    def __init__(self,config):
+    def __init__(self,config, scenario_file):
         ''' Initialization requires a scenario configuration file'''
         self.config = config
         self.table_container = table_container(self)
+        with open(scenario_file, 'r') as stream:
+            scen= yaml.load(stream, Loader = yaml.FullLoader)
+        self.data_paths = scen['data_paths']
         
         # these values may be updated by the scenario editor
         self.cost_per_mile = md.cost_per_mile
-        self.param_file = config.param_file
+        self.param_file = self.config.param_path + self.data_paths['param_file']
         
         self.start_time = time.time()
         
@@ -54,22 +57,24 @@ class Mode_Choice(object):
 
     def __read_taz_data(self):
         # Reads the zonal data into memory for processing
-        taz = pd.read_csv(self.config.taz_file)
-        land_use = pd.read_csv(self.config.land_use_file)
+        md.taz = md._taz(self.data_paths)
+        md.study_area = md._study_area(md.taz)
+        
+        taz = md.taz
+        land_use = pd.read_csv(self.config.data_path + self.data_paths['land_use_file'])
         self.taz_lu = taz.merge(land_use,on='ID')
-        self.taz_parking = pd.read_csv(self.config.taz_parking_file).fillna(0)
-        self.taz_zonal = pd.read_csv(self.config.taz_zonal_file).sort_values('TAZ_ID')
+        self.taz_parking = pd.read_csv(self.config.data_path + self.data_paths['taz_parking_file']).fillna(0)
+        self.taz_zonal = pd.read_csv(self.config.data_path + self.data_paths['taz_zonal_file']).sort_values('TAZ_ID')
         print(f'✓ TAZ / land use / parking / zonal variables read. Time elapsed: {time.time()-self.start_time:.2f} seconds')
 
     def __read_skims(self):
         # Reads the skims into memory for processing
-        # TODO: replace list with dict
         
         self.skim_list = []
-        for skim_fn in self.config.skim_list:
+        for skim_fn in self.data_paths['skim_list']:
             exec('self.' + skim_fn +
-                 ' = mtx.store_omx_as_dict(self.config.'
-                 +skim_fn+ '_file)')    
+                 ' = mtx.store_omx_as_dict(self.config.data_path + self.data_paths["'
+                 +skim_fn+ '_file"])')    
             self.skim_list.append(skim_fn)
         
         print(f'✓ skims read. Time elapsed: {time.time()-self.start_time:.2f} seconds')
@@ -80,7 +85,7 @@ class Mode_Choice(object):
         
     def __read_trip_table(self):
         # Reads the zonal data into memory for processing
-        self.pre_MC_trip_table = mtx.store_omx_as_dict(self.config.pre_MC_trip_file)
+        self.pre_MC_trip_table = mtx.store_omx_as_dict(self.config.data_path + self.data_paths['pre_MC_trip_file'])
         print(f'✓ trip table read. Time elapsed: {time.time()-self.start_time:.2f} seconds')
         
     def __generate_zonal_var(self):

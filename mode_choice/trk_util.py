@@ -39,7 +39,7 @@ def trip_by_neighborhood(mc_obj, out_fn = None):
     :param out_fn: output csv filename; if None specified, in the output path defined in config.py  
     :param by: grouping used for the summary; if None specified, only aggregate production and attraction will be provided.
     '''
-    trk_trip = omx.open_file(mc_obj.config.truck_trip_table,'r')
+    trk_trip = omx.open_file(mc_obj.config.data_path + mc_obj.data_paths['truck_trip_table'],'r')
     
     if out_fn is None:
         out_fn = mc_obj.config.out_path + f'trk_trip_by_neighborhood.csv'
@@ -64,7 +64,7 @@ def vmt_by_neighborhood(mc_obj, out_fn = None):
     :param out_fn: output csv filename; if None specified, in the output path defined in config.py  
     :param by: grouping used for the summary; if None specified, only aggregate production and attraction will be provided.
     '''
-    trk_trip = omx.open_file(mc_obj.config.truck_trip_table,'r')
+    trk_trip = omx.open_file(mc_obj.config.data_path + mc_obj.data_paths['truck_trip_table'],'r')
     
     if out_fn is None:
         out_fn = mc_obj.config.out_path + f'trk_vmt_by_neighborhood.csv'
@@ -84,7 +84,7 @@ def vmt_by_neighborhood(mc_obj, out_fn = None):
     
 def compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighboring'):
     ''' Computing function used by write_summary_by_subregion(), does not produce outputs'''
-    trk_trip = omx.open_file(mc_obj.config.truck_trip_table,'r')
+    trk_trip = omx.open_file(mc_obj.config.data_path + mc_obj.data_paths['truck_trip_table'],'r')
     taz_fn = mc_obj.config.data_path + r"..\TAZ_by_interstate.csv"
     if metric.lower() not in ('vmt','trip'):
         print('Only supports trip, and VMT calculations.')

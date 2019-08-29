@@ -45,16 +45,16 @@ class CS_FM_Tool():
         
         self.scenario_file = scenario_file
 
-        self.mc = mode_choice.Mode_Choice(config)
+        self.mc = mode_choice.Mode_Choice(config, scenario_file)
 
-        stream = open(scenario_file, 'r')
-        
-        scen= yaml.load(stream, Loader = yaml.FullLoader)
+        with open(scenario_file, 'r') as stream:
+            scen= yaml.load(stream, Loader = yaml.FullLoader)
+        self.data_paths = scen['data_paths']
         self.name = scen['name']      
         self.exp_vars = scen['experiment_variables']
         
-        stream = open(perf_meas_file, 'r')
-        pm= yaml.load(stream, Loader = yaml.FullLoader)
+        with open(perf_meas_file, 'r') as stream:
+            pm= yaml.load(stream, Loader = yaml.FullLoader)
         self.perf_meas = pm['performance_measures']
         
         # check to see if scenario exists and prompt to rename

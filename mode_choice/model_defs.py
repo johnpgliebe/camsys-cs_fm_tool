@@ -34,9 +34,13 @@ AO_dict = {'DA':1,'SR2':2,'SR2+':2,'SR3+':3.5,'SM_RA':1, 'SM_SH':2}
 cost_per_mile = 0.184
 
 # study area definitions
-taz = pd.read_csv(config.taz_interstate_file).sort_values(['ID_FOR_CS']).reset_index(drop = True)[0:max_zone][['TOWN','in_i95i93','in_i495','ID_FOR_CS']]
-taz = taz.merge(pd.read_csv(config.taz_file).sort_values(['ID_FOR_CS'])[0:max_zone][['ID_FOR_CS','BOSTON_NB']])
-taz['BOS_AND_NEI'] = taz['TOWN'].isin([n+',MA' for n in ['WINTHROP','CHELSEA','REVERE','SOMERVILLE','CAMBRIDGE','WATERTOWN','NEWTON',
+def _taz(data_paths):
+    taz = pd.read_csv(config.data_path+ data_paths['taz_interstate_file']).sort_values(['ID_FOR_CS']).reset_index(drop = True)[0:max_zone][['TOWN','in_i95i93','in_i495','ID_FOR_CS','ID','TAZ_ID']]
+    taz = taz.merge(pd.read_csv(config.data_path + data_paths['taz_file']).sort_values(['ID_FOR_CS'])[0:max_zone][['ID_FOR_CS','BOSTON_NB']]) 
+    taz['BOS_AND_NEI'] = taz['TOWN'].isin([n+',MA' for n in ['WINTHROP','CHELSEA','REVERE','SOMERVILLE','CAMBRIDGE','WATERTOWN','NEWTON',
           'BROOKLINE','NEEDHAM','DEDHAM','MILTON','QUINCY','BOSTON']])
-taz['BOSTON'] = taz['TOWN'].str.contains('BOSTON')
-study_area = taz['BOSTON'].values
+    taz['BOSTON'] = taz['TOWN'].str.contains('BOSTON')
+    return taz
+
+def _study_area(taz):
+    return taz['BOSTON'].values
