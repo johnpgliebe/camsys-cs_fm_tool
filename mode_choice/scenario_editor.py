@@ -270,11 +270,11 @@ def congestion_charge(mc_obj, cordon_area, charge):
     :param cordon_area: cordon area neighborhoods
     :param charge: charge to be applied for trips to the cordon area
     '''         
-    cong_zones = mc_obj.taz_lu[mc_obj.taz_lu['BOSTON_NB'].isin(cordon_area)]['ID'].values
+    cong_zones = mc_obj.taz[mc_obj.taz['BOSTON_NB'].isin(cordon_area)]['ID'].values
     
     cong_charge_table = np.zeros((md.max_zone,md.max_zone))
-    cong_charge_table[np.ix_(np.where(np.logical_not(mc_obj.taz_lu['ID'].iloc[:md.max_zone].isin(cong_zones).values))[0],
-      np.where(mc_obj.taz_lu['ID'].iloc[:md.max_zone].isin(cong_zones).values)[0])] = charge
+    cong_charge_table[np.ix_(np.where(np.logical_not(mc_obj.taz['ID'].iloc[:md.max_zone].isin(cong_zones).values))[0],
+      np.where(mc_obj.taz['ID'].iloc[:md.max_zone].isin(cong_zones).values)[0])] = charge
     
     mc_obj.drive_skim_PK['Auto_Toll (Skim)'] += cong_charge_table
     mc_obj.drive_skim_OP['Auto_Toll (Skim)'] += cong_charge_table
