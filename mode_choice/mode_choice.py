@@ -130,11 +130,12 @@ class Mode_Choice(object):
             elif mode in DAT_modes:
                 skim = skim_dict[mode]
                 table = skim['Total_IVTT']
-                table[np.where(table==0)]=+1e4 # 0 in DAT skims indicates no path found
+                table[np.where(abs(table)>1e6)] = +1e6 # negative infinity indicates no path found
+                table[np.where(table==0)]=+1e6 # 0 in DAT skims indicates no path found
             elif mode in WAT_modes:
                 skim = skim_dict['WAT']
                 table = skim['Total_IVTT']
-                table[np.where(table==0)]=+1e4 # 0 in DAT skims indicates no path found
+                table[np.where(table==0)]=+1e6 # 0 in DAT skims indicates no path found
             elif mode in active_modes:
                 pass
             elif mode in smart_mobility_modes:
