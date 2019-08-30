@@ -15,8 +15,8 @@ def __mt_prod_attr_nhood(mc_obj, trip_table, skim): # miles traveled. For VMT an
     prod = pd.DataFrame(np.sum(mt_total,axis = 1)/2, columns = ['Production'])
     attr = pd.DataFrame(np.sum(mt_total,axis = 0)/2, columns = ['Attraction'])
     
-    towns = mc_obj.taz_lu.sort_values('TAZ_ID').iloc[0:md.max_zone]
-    mt_taz = pd.concat([towns[['TAZ_ID','BOSTON_NB']],prod,attr],axis = 1,join = 'inner')
+    towns = mc_obj.taz.sort_values(md.taz_ID_field).iloc[0:md.max_zone]
+    mt_taz = pd.concat([towns[[md.taz_ID_field,'BOSTON_NB']],prod,attr],axis = 1,join = 'inner')
     mt_taz.index.names=['Boston Neighborhood']
     return mt_taz.groupby(['BOSTON_NB']).sum()[['Production','Attraction']].reset_index()
     
@@ -27,8 +27,8 @@ def __trip_prod_attr_nhood(mc_obj, trip_table):
     prod = pd.DataFrame(np.sum(mt_total,axis = 1), columns = ['Production'])
     attr = pd.DataFrame(np.sum(mt_total,axis = 0), columns = ['Attraction'])
     
-    towns = mc_obj.taz_lu.sort_values('TAZ_ID').iloc[0:md.max_zone]
-    mt_taz = pd.concat([towns[['TAZ_ID','BOSTON_NB']],prod,attr],axis = 1,join = 'inner')
+    towns = mc_obj.taz.sort_values(md.taz_ID_field).iloc[0:md.max_zone]
+    mt_taz = pd.concat([towns[[md.taz_ID_field,'BOSTON_NB']],prod,attr],axis = 1,join = 'inner')
     mt_taz.index.names=['Boston Neighborhood']
     return mt_taz.groupby(['BOSTON_NB']).sum()[['Production','Attraction']].reset_index()
     

@@ -58,9 +58,9 @@ def write_boston_neighbortown_mode_share_to_excel(mc_obj):
             for mode in trip_table[pv].keys():
             #study area zones might not start at zone 0 and could have discontinous TAZ IDs
                 
-                trip_table_o = mtx.OD_slice(trip_table[pv][mode], O_slice = taz['BOSTON'], D_slice = taz['BOS_AND_NEI'])
-                trip_table_d = mtx.OD_slice(trip_table[pv][mode], taz['BOS_AND_NEI'], taz['BOSTON'])
-                trip_table_b = mtx.OD_slice(trip_table[pv][mode], taz['BOSTON'], taz['BOSTON'])
+                trip_table_o = mtx.OD_slice(trip_table[pv][mode], O_slice = md.taz['BOSTON'], D_slice = md.taz['BOS_AND_NEI'])
+                trip_table_d = mtx.OD_slice(trip_table[pv][mode], md.taz['BOS_AND_NEI'], md.taz['BOSTON'])
+                trip_table_b = mtx.OD_slice(trip_table[pv][mode], md.taz['BOSTON'], md.taz['BOSTON'])
                 
                 trip_table_bos = trip_table_o + trip_table_d - trip_table_b
                 mode_share.loc[mode,pv] = trip_table_bos.sum()
@@ -191,8 +191,8 @@ def __mt_prod_attr_nhood(mc_obj, trip_table, skim): # miles traveled. For VMT an
     prod = pd.DataFrame(np.sum(mt_total,axis = 1)/2, columns = ['Production'])
     attr = pd.DataFrame(np.sum(mt_total,axis = 0) / 2, columns = ['Attraction'])
     
-    towns = mc_obj.taz_lu.sort_values('TAZ_ID').iloc[0:md.max_zone]
-    mt_taz = pd.concat([towns[['TAZ_ID','BOSTON_NB']],prod,attr],axis = 1,join = 'inner')
+    towns = mc_obj.taz.sort_values(md.taz_ID_field).iloc[0:md.max_zone]
+    mt_taz = pd.concat([towns[[md.taz_ID_field,'BOSTON_NB']],prod,attr],axis = 1,join = 'inner')
     mt_taz.index.names=['Boston Neighborhood']
     return mt_taz.groupby(['BOSTON_NB']).sum()[['Production','Attraction']].reset_index()
     
@@ -203,8 +203,8 @@ def __trip_prod_attr_nhood(mc_obj, trip_table):
     prod = pd.DataFrame(np.sum(mt_total,axis = 1), columns = ['Production'])
     attr = pd.DataFrame(np.sum(mt_total,axis = 0), columns = ['Attraction'])
     
-    towns = mc_obj.taz_lu.sort_values('TAZ_ID').iloc[0:md.max_zone]
-    mt_taz = pd.concat([towns[['TAZ_ID','BOSTON_NB']],prod,attr],axis = 1,join = 'inner')
+    towns = mc_obj.taz.sort_values(md.taz_ID_field).iloc[0:md.max_zone]
+    mt_taz = pd.concat([towns[[md.taz_ID_field,'BOSTON_NB']],prod,attr],axis = 1,join = 'inner')
     mt_taz.index.names=['Boston Neighborhood']
     return mt_taz.groupby(['BOSTON_NB']).sum()[['Production','Attraction']].reset_index()
     
@@ -554,8 +554,8 @@ def mode_share_by_neighborhood(mc_obj, out_fn = None, by = None):
                             
                             share_table[category] += (trip_table.sum(axis = 1)+trip_table.sum(axis = 0))/2
                         
-                        towns = mc_obj.taz_lu.sort_values('TAZ_ID').iloc[0:md.max_zone]
-                        trips = pd.concat([towns[['TAZ_ID','BOSTON_NB']],share_table],axis = 1,join = 'inner').groupby(['BOSTON_NB']).sum().drop(['TAZ_ID'],axis = 1)
+                        towns = mc_obj.taz.sort_values(md.taz_ID_field).iloc[0:md.max_zone]
+                        trips = pd.concat([towns[[md.taz_ID_field,'BOSTON_NB']],share_table],axis = 1,join = 'inner').groupby(['BOSTON_NB']).sum().drop([md.taz_ID_field],axis = 1)
                         trips['peak'] = peak
                         trips['veh_own'] = veh_own
                         trips['purpose'] = purpose
@@ -960,8 +960,8 @@ def __trips_to_from_boston(taz, mode, tripsum_table):
     town_o=pd.concat([taz,zone_daily_o],axis=1,join='inner')
     town_d=pd.concat([taz,zone_daily_d],axis=1,join='inner')
 
-    zone_o = town_o[town_o['TOWN']=='BOSTON,MA'].groupby(['ID_FOR_CS']).sum()[mode]
-    zone_d = town_d[town_d['TOWN']=='BOSTON,MA'].groupby(['ID_FOR_CS']).sum()[mode]
+    zone_o = town_o[town_o['TOWN']=='BOSTON,MA'].groupby([md.taz_ID_field]).sum()[mode]
+    zone_d = town_d[town_d['TOWN']=='BOSTON,MA'].groupby([md.taz_ID_field]).sum()[mode]
     return zone_o, zone_d
 
 def trips_by_mode(mc_obj, mode='all'):
@@ -1165,7 +1165,7 @@ def transit_ridership(mc_obj, by='all'):
     '''
     MBTA_fn =mc_obj.config.data_path + "..\MBTA_coverage.csv"
     MBTA_cvg = pd.read_csv(MBTA_fn)
-    taz_cvg = mc_obj.taz_lu.merge(MBTA_cvg, how = 'left', on = 'TOWN')
+    taz_cvg = mc_obj.taz.merge(MBTA_cvg, how = 'left', on = 'TOWN')
     taz_cvg = taz_cvg[['ID_FOR_CS','subway','TOWN']]
     taz_cvg['covered'] = taz_cvg['subway']==1 # 870 TAZs included.
     ridership_master = pd.DataFrame(columns=['region','subway'])

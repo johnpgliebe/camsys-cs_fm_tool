@@ -60,11 +60,10 @@ class Mode_Choice(object):
         md.taz = md._taz(self.data_paths)
         md.study_area = md._study_area(md.taz)
         
-        taz = md.taz
-        land_use = pd.read_csv(self.config.data_path + self.data_paths['land_use_file'])
-        self.taz_lu = taz.merge(land_use,on='ID')
-        self.taz_parking = pd.read_csv(self.config.data_path + self.data_paths['taz_parking_file']).fillna(0)
-        self.taz_zonal = pd.read_csv(self.config.data_path + self.data_paths['taz_zonal_file']).sort_values('TAZ_ID')
+        self.taz = md.taz
+        # land_use = pd.read_csv(self.config.data_path + self.data_paths['land_use_file'])
+        # self.taz_lu = taz.merge(land_use,on='ID')
+       
         print(f'✓ TAZ / land use / parking / zonal variables read. Time elapsed: {time.time()-self.start_time:.2f} seconds')
 
     def __read_skims(self):
@@ -90,19 +89,19 @@ class Mode_Choice(object):
         
     def __generate_zonal_var(self):
         #generates parking, PEV, pop density, emp density, hh size, vpw, wacc, wegr tables.
-        self.parking = mtx.expand_attr(self.taz_parking['Daily Parking Cost'])/2
-        self.AccPEV = mtx.expand_prod(self.taz_zonal['Acc_PEV'].fillna(0.001))
-        self.EgrPEV = mtx.expand_attr(self.taz_zonal['Egr_PEV'].fillna(0.001))
-        self.PopD = np.sqrt(mtx.expand_prod( self.taz_zonal['Tot_Pop']/self.taz_zonal['Area'] ) )
-        self.EmpD = np.sqrt(mtx.expand_attr( self.taz_zonal['Tot_Emp']/self.taz_zonal['Area'] ) )
-        self.HHSize = mtx.expand_prod((self.taz_zonal['HH_Pop']/self.taz_zonal['HH']).fillna(0))
-        self.VPW = mtx.expand_prod( self.taz_zonal['VehiclesPerWorker'].fillna(
-        self.taz_zonal['VehiclesPerWorker'].mean()))
-        self.wacc_PK = mtx.expand_prod( self.taz_zonal['AM_wacc_fact'])
-        self.wacc_OP = mtx.expand_prod( self.taz_zonal['MD_wacc_fact'])
-        self.wegr_PK = mtx.expand_attr( self.taz_zonal['AM_wacc_fact'])
-        self.wegr_OP = mtx.expand_attr( self.taz_zonal['MD_wacc_fact'])
-        self.Hwy_Prod_Term = mtx.expand_prod( self.taz_zonal['Hwy Prod Term Time']) 
+        self.parking = mtx.expand_attr(self.taz['Daily Parking Cost'])/2
+        self.AccPEV = mtx.expand_prod(self.taz['Acc_PEV'].fillna(0.001))
+        self.EgrPEV = mtx.expand_attr(self.taz['Egr_PEV'].fillna(0.001))
+        self.PopD = np.sqrt(mtx.expand_prod( self.taz['Tot_Pop']/self.taz['Area'] ) )
+        self.EmpD = np.sqrt(mtx.expand_attr( self.taz['Tot_Emp']/self.taz['Area'] ) )
+        self.HHSize = mtx.expand_prod((self.taz['HH_Pop']/self.taz['HH']).fillna(0))
+        self.VPW = mtx.expand_prod( self.taz['VehiclesPerWorker'].fillna(
+        self.taz['VehiclesPerWorker'].mean()))
+        self.wacc_PK = mtx.expand_prod( self.taz['AM_wacc_fact'])
+        self.wacc_OP = mtx.expand_prod( self.taz['MD_wacc_fact'])
+        self.wegr_PK = mtx.expand_attr( self.taz['AM_wacc_fact'])
+        self.wegr_OP = mtx.expand_attr( self.taz['MD_wacc_fact'])
+        self.Hwy_Prod_Term = mtx.expand_prod( self.taz['Hwy Prod Term Time']) 
         print(f'✓ zonal variable tables generated. Time elapsed: {time.time()-self.start_time:.2f} seconds')
         
 
