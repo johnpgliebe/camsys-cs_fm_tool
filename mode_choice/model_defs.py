@@ -35,7 +35,7 @@ cost_per_mile = 0.184
 
 # study area definitions
 def _taz(data_paths):
-    taz = pd.read_csv(config.data_path+ data_paths['taz_interstate_file']).sort_values(['ID_FOR_CS']).reset_index(drop = True)[0:max_zone][['TOWN','in_i95i93','in_i495','ID_FOR_CS','ID','TAZ_ID']]
+    taz = pd.read_csv(config.data_path+ data_paths['taz_interstate_file']).sort_values(['ID_FOR_CS']).reset_index(drop = True)[0:max_zone]# [['TOWN','in_i95i93','in_i495','ID_FOR_CS','ID','TAZ_ID']]
     taz = taz.merge(pd.read_csv(config.data_path + data_paths['taz_file']).sort_values(['ID_FOR_CS'])[0:max_zone][['ID_FOR_CS','BOSTON_NB']]) 
     taz['BOS_AND_NEI'] = taz['TOWN'].isin([n+',MA' for n in ['WINTHROP','CHELSEA','REVERE','SOMERVILLE','CAMBRIDGE','WATERTOWN','NEWTON',
           'BROOKLINE','NEEDHAM','DEDHAM','MILTON','QUINCY','BOSTON']])
