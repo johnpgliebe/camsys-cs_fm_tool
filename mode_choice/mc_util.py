@@ -103,7 +103,7 @@ def write_boston_mode_share_to_excel(mc_obj):
             
                 trip_table_o = mtx.OD_slice(trip_table[pv][mode], O_slice = md.taz['BOSTON'])
                 trip_table_d = mtx.OD_slice(trip_table[pv][mode], D_slice = md.taz['BOSTON'])
-                trip_table_b = mtx.OD_slice(trip_table[pv][mode], md.taz['BOSTON'], md.taz['BOSTON'])
+                trip_table_b = mtx.OD_slice(trip_table[pv][mode], O_slice = md.taz['BOSTON'], D_slice = md.taz['BOSTON'])
             
                 trip_table_bos = trip_table_o + trip_table_d - trip_table_b
                 mode_share.loc[mode,pv] = trip_table_bos.sum()
@@ -535,7 +535,7 @@ def mode_share_by_neighborhood(mc_obj, out_fn = None, by = None):
         out_fn = mc_obj.config.out_path + f'mode_share_by_neighborhood_by_{by}.csv'
 
     if by in ['peak','veh_own','purpose'] == False:
-        print('Only supports PMT by neighborhood, peak / vehicle ownership, purpose.')
+        print('Only supports mode share by neighborhood, peak / vehicle ownership, purpose.')
         return
 
     else:
@@ -590,7 +590,80 @@ def mode_share_by_neighborhood(mc_obj, out_fn = None, by = None):
         
         share_summary.to_csv(out_fn)
     
+# Seaport method
+def mode_share_by_subarea(mc_obj, out_fn = None, by = None):
+    '''
+    Summarizes mode share as the average of trips to/from the 7 Seaport sub-areas, in three categories - drive, non-motorized and transit.
     
+    :param mc_obj: mode choice module object as defined in the IPython notebook
+    :param out_fn: output csv filename; if None specified, in the output path defined in config.py  
+    :param by: grouping used for the summary
+    '''
+    if out_fn is None and by is None:
+        out_fn = mc_obj.config.out_path + f'mode_share_by_subarea.csv'
+    elif out_fn is None and by:
+        out_fn = mc_obj.config.out_path + f'mode_share_by_subarea_by_{by}.csv'
+
+    if by in ['peak','veh_own','purpose'] == False:
+        print('Only supports mode share by subarea, peak / vehicle ownership, purpose.')
+        return
+
+    else:
+        
+        share_master_table = pd.DataFrame(columns = ['drive','non-motorized','transit','peak','veh_own','purpose'])
+
+        for purpose in md.purposes:
+            for peak in ['PK','OP']:
+                for veh_own in ['0','1']:
+                    if mc_obj.table_container.get_table(purpose):
+                        share_table = pd.DataFrame(index = range(0,md.max_zone),columns = ['drive','non-motorized','transit','smart mobility']).fillna(0)
+                        for mode in mc_obj.table_container.get_table(purpose)[f'{veh_own}_{peak}']:
+                        
+                            trip_table = mc_obj.table_container.get_table(purpose)[f'{veh_own}_{peak}'][mode]
+                            category = md.mode_categories[mode]
+                            
+                            share_table[category] += (trip_table.sum(axis = 1)+trip_table.sum(axis = 0))/2
+                        
+                        towns = mc_obj.taz.sort_values(md.taz_ID_field).iloc[0:md.max_zone]
+                        towns['REPORT_AREA'] = towns['REPORT_AREA'][towns['REPORT_AREA'].isin(['South Station', 'Seaport Blvd', 'Design Center',
+       'Southeast Seaport', 'BCEC', 'Fort Point', 'Broadway'])]
+                        trips = pd.concat([towns[[md.taz_ID_field,'REPORT_AREA']],share_table],axis = 1,join = 'inner').groupby(['REPORT_AREA']).sum().drop([md.taz_ID_field],axis = 1)
+                        trips['peak'] = peak
+                        trips['veh_own'] = veh_own
+                        trips['purpose'] = purpose
+                        
+                        share_master_table = share_master_table.append(trips.reset_index(), sort = True)
+        
+        if by == None:
+            trip_summary = share_master_table.groupby('REPORT_AREA').sum()
+            share_summary = trip_summary.divide(trip_summary.sum(axis = 1),axis = 0)
+        
+        elif by == 'peak':
+            share_summary = pd.concat([
+            share_master_table.groupby(['peak','REPORT_AREA']).sum().loc[peak].divide(
+            share_master_table.groupby(['peak','REPORT_AREA']).sum().loc[peak].sum(axis=1),axis = 0)
+            for peak in ['PK','OP']
+            ], axis = 1, keys = ['PK','OP'])
+        
+        elif by == 'veh_own':
+            share_summary = pd.concat([
+            share_master_table.groupby(['veh_own','REPORT_AREA']).sum().loc[veh_own].divide(
+            share_master_table.groupby(['veh_own','REPORT_AREA']).sum().loc[veh_own].sum(axis=1),axis = 0)
+            for veh_own in ['0','1']
+            ], axis = 1, keys = ['No car', 'With car'])
+            
+        elif by == 'purpose':
+            share_summary = pd.concat([
+            share_master_table.groupby(['purpose','REPORT_AREA']).sum().loc[purpose].divide(
+            share_master_table.groupby(['purpose','REPORT_AREA']).sum().loc[purpose].sum(axis=1),axis = 0)
+            for purpose in share_master_table.purpose.unique()
+            ],axis = 1, keys= share_master_table.purpose.unique())
+        
+        
+        share_summary.to_csv(out_fn)
+
+
+
 def __sm_compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighboring', sm_mode='SM_RA'):
     ''' Computing function used by write_summary_by_subregion(), does not produce outputs'''
 
@@ -760,7 +833,7 @@ def __compute_metric_by_zone(mc_obj,metric = 'VMT'):
         boston_d_auto_pmt = mtx.OD_slice(pmt_table, D_slice = md.taz['BOSTON'])
         #boston_o_auto_pmt = pmt_table[taz['BOSTON'],:]
         #boston_d_auto_pmt = pmt_table[:][:,taz['BOSTON']]
-        town_definition = taz   
+        town_definition = md.taz   
         
         zone_pmt_daily_o = pd.DataFrame(np.sum(boston_o_auto_pmt,axis=0)/2 ,columns=["VMT"])
         zone_pmt_daily_d = pd.DataFrame(np.sum(boston_d_auto_pmt,axis=1)/2 ,columns=["VMT"])
@@ -803,7 +876,7 @@ def __compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighborin
             #boston_o_auto_vmt = vmt_table[md.taz['BOSTON'],:][:, md.taz[field]== True]
             #boston_d_auto_vmt = vmt_table[md.taz[field]== True,:][:,md.taz['BOSTON']]
             boston_o_auto_vmt = mtx.OD_slice(vmt_table, O_slice = md.taz['BOSTON'], D_slice = md.taz[field]== True)
-            boston_o_auto_vmt = mtx.OD_slice(vmt_table, O_slice = md.taz[field]== True, D_slice = md.taz['BOSTON'])
+            boston_d_auto_vmt = mtx.OD_slice(vmt_table, O_slice = md.taz[field]== True, D_slice = md.taz['BOSTON'])
             
             town_definition = md.taz[md.taz[field]== True]
         
@@ -811,7 +884,7 @@ def __compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighborin
             # boston_o_auto_vmt = vmt_table[md.taz['BOSTON'],:]
             # boston_d_auto_vmt = vmt_table[:][:,md.taz['BOSTON']]
             boston_o_auto_vmt = mtx.OD_slice(vmt_table, O_slice = md.taz['BOSTON'])
-            boston_o_auto_vmt = mtx.OD_slice(vmt_table, D_slice = md.taz['BOSTON'])
+            boston_d_auto_vmt = mtx.OD_slice(vmt_table, D_slice = md.taz['BOSTON'])
             
             town_definition = md.taz   
         
@@ -929,8 +1002,8 @@ def __compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighborin
                         if mc_obj.table_container.get_table(purpose):
                             for mode in mc_obj.table_container.get_table(purpose)[f'{veh_own}_{peak}']:
                                 trip_table = mc_obj.table_container.get_table(purpose)[f'{veh_own}_{peak}'][mode]
-                                boston_ii_trips = trip_table[taz['BOSTON'],:][:,taz['BOSTON']].sum()
-                                trips = trip_table[taz['BOSTON'],:][:, taz[field]== True].sum() + trip_table[taz[field]== True,:][:,taz['BOSTON']].sum() - boston_ii_trips
+                                boston_ii_trips = trip_table[md.taz['BOSTON'],:][:,md.taz['BOSTON']].sum()
+                                trips = trip_table[md.taz['BOSTON'],:][:, md.taz[field]== True].sum() + trip_table[md.taz[field]== True,:][:,md.taz['BOSTON']].sum() - boston_ii_trips
                                 category = md.mode_categories[mode]
                                 share_table[category]+=trips
                                 
@@ -941,8 +1014,8 @@ def __compute_summary_by_subregion(mc_obj,metric = 'VMT',subregion = 'neighborin
                         if mc_obj.table_container.get_table(purpose):
                             for mode in mc_obj.table_container.get_table(purpose)[f'{veh_own}_{peak}']:
                                 trip_table = mc_obj.table_container.get_table(purpose)[f'{veh_own}_{peak}'][mode]
-                                boston_ii_trips = trip_table[taz['BOSTON'],:][:,taz['BOSTON']].sum()
-                                trips = trip_table[taz['BOSTON'],:][:].sum() + trip_table[:][:,taz['BOSTON']].sum() - boston_ii_trips
+                                boston_ii_trips = trip_table[md.taz['BOSTON'],:][:,md.taz['BOSTON']].sum()
+                                trips = trip_table[md.taz['BOSTON'],:][:].sum() + trip_table[:][:,md.taz['BOSTON']].sum() - boston_ii_trips
                                 category = md.mode_categories[mode]
                                 share_table[category]+=trips
         # normalize

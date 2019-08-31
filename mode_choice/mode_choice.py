@@ -416,9 +416,11 @@ class Mode_Choice(object):
             print(f'Mode choice for {purpose} started.')
             self.run_for_purpose(purpose)
             #write_mode_share_to_excel(self,purpose)
-    
-    def call_var_by_mode(self,pv='0_PK',var='OVTT',mode='DA'):
-        self.__var_by_mode(pv,var,mode)
 
-    def call_mode_probability_tables(self,pv='0_PK',mode='DA'):
-        self.__mode_probability_tables(pv,mode)
+
+# Diagnostic methods
+    def call_var_by_mode(self,pv='0_PK',var='OVTT',mode='DA'):
+        return self.__var_by_mode(pv,var,mode)
+
+    def call_mode_probability_tables(self,pv='0_PK',modes=['DA']):
+        return self.__mode_probability_tables(pv,modes)[0]
