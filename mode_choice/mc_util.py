@@ -76,16 +76,17 @@ def write_boston_neighbortown_mode_share_to_excel(mc_obj):
     
         writer.save()
 
-def write_boston_mode_share_to_excel(mc_obj):
+def write_study_area_mode_share_to_excel(mc_obj, out_excel_fn = None):
     '''
     Writes mode share summary by purpose and market segment to an Excel workbook.
-    Applies only to trips to/from Boston
+    Applies only to trips to/from study area
     
     :param mc_obj: mode choice module object as defined in the IPython notebook
     :param out_excel_fn: output Excel filename, by default in the output path defined in config.py  
     '''
+    if out_excel_fn is None:
+        out_excel_fn = mc_obj.config.out_path + "mode_share_study_area_{0}.xlsx".format(strftime("%Y%m%d"))
     
-    out_excel_fn = mc_obj.config.out_path + "mode_share_Boston_{0}.xlsx".format(strftime("%Y%m%d"))
     # check if file exists.
     if os.path.isfile(out_excel_fn):
         book = load_workbook(out_excel_fn)
@@ -101,12 +102,12 @@ def write_boston_mode_share_to_excel(mc_obj):
         for pv in md.peak_veh:
             for mode in trip_table[pv].keys():
             
-                trip_table_o = mtx.OD_slice(trip_table[pv][mode], O_slice = md.taz['BOSTON'])
-                trip_table_d = mtx.OD_slice(trip_table[pv][mode], D_slice = md.taz['BOSTON'])
-                trip_table_b = mtx.OD_slice(trip_table[pv][mode], O_slice = md.taz['BOSTON'], D_slice = md.taz['BOSTON'])
+                trip_table_o = mtx.OD_slice(trip_table[pv][mode], O_slice = md.study_area)
+                trip_table_d = mtx.OD_slice(trip_table[pv][mode], D_slice = md.study_area)
+                trip_table_ii = mtx.OD_slice(trip_table[pv][mode], O_slice = md.study_area, D_slice = md.study_area)
             
-                trip_table_bos = trip_table_o + trip_table_d - trip_table_b
-                mode_share.loc[mode,pv] = trip_table_bos.sum()
+                trip_table_sa = trip_table_o + trip_table_d - trip_table_ii
+                mode_share.loc[mode,pv] = trip_table_sa.sum()
 
         mode_share['Total'] = mode_share.sum(1)
         mode_share['Share'] = mode_share['Total'] / mode_share['Total'].sum()
@@ -119,7 +120,7 @@ def write_boston_mode_share_to_excel(mc_obj):
     
         writer.save()
     
-def write_mode_share_to_excel(mc_obj,purpose):
+def write_mode_share_to_excel(mc_obj,purpose, out_excel_fn = None):
     '''
     Writes mode share summary by purpose and market segment to an Excel workbook.
     
@@ -127,8 +128,8 @@ def write_mode_share_to_excel(mc_obj,purpose):
     :param purpose: can be a single purpose or 'all', in which case the Excel workbook has six sheets, one for each purpose.
     :param out_excel_fn: output Excel filename, by default in the output path defined in config.py  
     '''
-    
-    out_excel_fn = mc_obj.config.out_path + "MC_mode_share_{0}_{1}.xlsx".format(purpose, strftime("%Y%m%d"))
+    if out_excel_fn is None:
+        out_excel_fn = mc_obj.config.out_path + "MC_mode_share_{0}_{1}.xlsx".format(purpose, strftime("%Y%m%d"))
     if purpose == 'all':
         # check if file exists.
         if os.path.isfile(out_excel_fn):

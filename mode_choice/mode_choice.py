@@ -48,7 +48,7 @@ class Mode_Choice(object):
         
         # these values may be updated by the scenario editor
         self.cost_per_mile = md.cost_per_mile
-        self.param_file = self.config.param_path + self.data_paths['param_file']
+        self.param_file = self.data_paths['param_path'] + self.data_paths['param_file']
         
         self.start_time = time.time()
         
@@ -84,7 +84,7 @@ class Mode_Choice(object):
         
     def __read_trip_table(self):
         # Reads the zonal data into memory for processing
-        self.pre_MC_trip_table = mtx.store_omx_as_dict(self.config.data_path + self.data_paths['pre_MC_trip_file'])
+        self.pre_MC_trip_table = mtx.store_omx_as_dict(self.data_paths['data_path'] + self.data_paths['pre_MC_trip_file'])
         print(f'✓ trip table read. Time elapsed: {time.time()-self.start_time:.2f} seconds')
         
     def __generate_zonal_var(self):
