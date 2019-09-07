@@ -2,12 +2,12 @@
 # Cambridge Systematics Future Mobility Tool - Scenario Configuration
 #
 
-name: base_seaport
+name: base_seaport_2040
 desc: Base scenario - all options set to default (false)
     
 # Input data paths
 data_paths:
-    data_path: C:/Users/xchang/Documents/Seaport_data/data/2018/
+    data_path: 'C:/Egnyte/Shared/Projects/190077/1 - Existing Conditions/4 - CTPS/model_data/Seaport_data/data/2040/'
     skim_list: ['drive_skim_PK','drive_skim_OP','DAT_B_skim_PK','DAT_B_skim_OP','DAT_CR_skim_PK',
         'DAT_CR_skim_OP','DAT_RT_skim_PK','DAT_RT_skim_OP','DAT_LB_skim_PK','DAT_LB_skim_OP','WAT_skim_PK',
         'WAT_skim_OP','bike_skim','walk_skim']
@@ -34,12 +34,13 @@ data_paths:
     taz_file: "SW_TAZ_2010_SPRT.csv"
     taz_interstate_file: "../TAZ_by_interstate_SPRT.csv"
     taz_parking_file: "Land_Use_Parking_Costs_SPRT.csv"
-    taz_zonal_file: "TAZ_zonal_SPRT.csv"
+    taz_zonal_file: "TAZ_zonal_2040_SPRT.csv"
 
 # model purpose
 #purpose = 'HBSc1'
 
 # model parameter
+    param_path:'C:/Egnyte/Shared/Projects/190077/1 - Existing Conditions/4 - CTPS/model_data/Seaport_data/param/'
     param_file: 'param_calib_0716.xlsx'
 
     
