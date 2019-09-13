@@ -25,6 +25,8 @@ Make a copy of the param\baseline.yaml file and configure settings to represent 
 - pandas
 - openpyxl
 
+Run ``pip install -r requirements.txt`` to install these dependencies.
+
 ## Run
 An example is provided using Jupyter notebook (CS FM Tool Demo.ipynb). The tool may also be run directly from the python command line: 
 ````
