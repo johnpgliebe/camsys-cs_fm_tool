@@ -13,6 +13,21 @@ import re
 import os
 from mode_choice.mc_table_container import table_container
 
+# Tentative scenario for Seaport
+def track61_improvements(mc_obj, areas = ['Fort Point', 'BCEC', 'Seaport Boulevard', ' Broadway'], reduction = 2):
+    ''' Decrease WAT and drive-access Rapid Transit IVTT by 2 minutes for trips with one end in given Seaport report areas.
+    
+    :areas: target areas for transit travel time reduction
+    :reduction: number of minutes to be reduced in the associated skims
+    '''
+    TAZ_list = md.taz['REPORT_AREA'].isin(areas).values
+    for skim in [mc_obj.WAT_skim_PK, mc_obj.WAT_skim_OP, mc_obj.DAT_RT_skim_PK, mc_obj.DAT_RT_skim_OP]:
+        IVTT_to_area = mtx.OD_slice(np.maximum(skim['Total_IVTT'],0), D_slice = TAZ_list)
+        IVTT_from_area = mtx.OD_slice(np.maximum(skim['Total_IVTT'],0), O_slice = TAZ_list)
+        IVTT_inner = mtx.OD_slice(np.maximum(skim['Total_IVTT'],0), O_slice = TAZ_list, D_slice = TAZ_list)
+        IVTT_reduction = np.minimum(IVTT_to_area + IVTT_from_area - IVTT_inner, np.zeros((md.max_zone, md.max_zone)) + reduction)
+        skim['Total_IVTT'] = skim['Total_IVTT'] - IVTT_reduction
+
 
 def clean_vehicle_costs(mc_obj, clean_savings):
     ''' Decrease the cost per mile for clean vehicles

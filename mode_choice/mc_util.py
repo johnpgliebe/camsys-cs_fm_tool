@@ -119,7 +119,60 @@ def write_study_area_mode_share_to_excel(mc_obj, out_excel_fn = None):
         mode_share.to_excel(writer, sheet_name = purp)
     
         writer.save()
+
+def write_trip_tables_to_excel(mc_obj, out_excel_fn = None): #TODO
+    '''
+    Writes trip tables by purpose, market segment, O/D report areas to an Excel workbook.
     
+    :param mc_obj: mode choice module object as defined in the IPython notebook
+    :param out_excel_fn: output Excel filename, by default in the output path defined in config.py  
+    '''
+    if out_excel_fn is None:
+        out_excel_fn = mc_obj.config.out_path + "trip_tables_{0}.xlsx".format(strftime("%Y%m%d"))
+    
+    # check if file exists.
+    if os.path.isfile(out_excel_fn):
+        book = load_workbook(out_excel_fn)
+    else: 
+        book = Workbook()
+        book.save(out_excel_fn)
+    writer = pd.ExcelWriter(out_excel_fn,engine = 'openpyxl')
+    writer.book = book
+    
+    df_out = pd.DataFrame(None, columns = ['O_area', 'D_area','purpose','time_period','mode','trip_count'])
+    
+    TAZ_index_dict = dict(zip(md.taz.index, md.taz.REPORT_AREA.fillna('Outside I-495')))
+    
+    for purp in md.purposes:
+        mode_share = pd.DataFrame(columns = md.peak_veh)
+        trip_table = mc_obj.table_container.get_table(purp)
+        for pv in md.peak_veh:
+            for mode in trip_table[pv].keys():
+                OD = pd.DataFrame(trip_table[pv][mode]).stack().reset_index()
+                OD.columns = ['O_index','D_index','trip_count']
+                OD['O_area'] = OD.O_index.map(TAZ_index_dict)
+                OD['D_area'] = OD.D_index.map(TAZ_index_dict)
+                OD['mode'] = mode
+                OD['purpose'] = purp
+                OD['time_period'] = pv[2:]
+                
+                df_out = df_out.append(OD.drop(['O_index','D_index'], axis = 1).groupby(['O_area', 'D_area','purpose','time_period','mode'])['trip_count'].sum().reset_index())
+    df_out.to_excel(writer, sheet_name = 'trip_table')
+    
+    for purp in md.purposes:
+        trips_from_Seaport = df_out[df_out.O_area.isin(md.seaport)].query('purpose == "%s"'%purp).groupby(['O_area','D_area','time_period','mode'])['trip_count'].sum().unstack(level = [2,3])
+        trips_to_Seaport = df_out[df_out.D_area.isin(md.seaport)].query('purpose == "%s"'%purp).groupby(['D_area','O_area','time_period','mode'])['trip_count'].sum().unstack(level = [2,3])
+        trips_from_Seaport.to_excel(writer, sheet_name = purp+' trips from Seaport')
+        trips_to_Seaport.to_excel(writer, sheet_name = purp+' trips to Seaport')
+        
+        trips_from_Seaport.divide(trips_from_Seaport.sum(level = 0, axis = 1)).to_excel(writer, sheet_name = purp+' mode share from Seaport')
+        trips_to_Seaport.divide(trips_to_Seaport.sum(level = 0, axis = 1)).to_excel(writer, sheet_name = purp+' mode share to Seaport')
+        
+    writer.save()
+
+
+
+
 def write_mode_share_to_excel(mc_obj,purpose, out_excel_fn = None):
     '''
     Writes mode share summary by purpose and market segment to an Excel workbook.
@@ -208,6 +261,21 @@ def __trip_prod_attr_nhood(mc_obj, trip_table):
     mt_taz = pd.concat([towns[[md.taz_ID_field,'BOSTON_NB']],prod,attr],axis = 1,join = 'inner')
     mt_taz.index.names=['Boston Neighborhood']
     return mt_taz.groupby(['BOSTON_NB']).sum()[['Production','Attraction']].reset_index()
+    
+    
+def __trip_prod_attr_subarea(mc_obj, trip_table): 
+    mt_total = trip_table
+    
+    # calculate marginals
+    prod = pd.DataFrame(np.sum(mt_total,axis = 1), columns = ['Production'])
+    attr = pd.DataFrame(np.sum(mt_total,axis = 0), columns = ['Attraction'])
+    
+    towns = mc_obj.taz.sort_values(md.taz_ID_field).iloc[0:md.max_zone]
+    towns['REPORT_AREA'] = towns['REPORT_AREA'][towns['REPORT_AREA'].isin(['Seaport Blvd', 'Design Center',
+       'Southeast Seaport', 'BCEC', 'Fort Point', 'Broadway'])]
+    mt_taz = pd.concat([towns[[md.taz_ID_field,'REPORT_AREA']],prod,attr],axis = 1,join = 'inner')
+    mt_taz.index.names=['Seaport areas']
+    return mt_taz.groupby(['REPORT_AREA']).sum()[['Production','Attraction']].reset_index()
     
 def sm_vmt_by_neighborhood(mc_obj, out_fn = None, by = None, sm_mode = 'SM_RA'):
     '''
@@ -522,6 +590,58 @@ def trips_by_neighborhood(mc_obj, out_fn = None, by = None):
             trp_master_table.groupby(['purpose','BOSTON_NB']).sum().loc[purpose] for purpose in trp_master_table.purpose.unique()],axis = 1, keys= trp_master_table.purpose.unique())
 
         trp_summary.to_csv(out_fn)
+
+def trips_by_subarea(mc_obj, out_fn = None, by = None):
+    '''
+    Summarizes PMT production and attraction by the 26 Boston neighborhoods.
+    
+    :param mc_obj: mode choice module object as defined in the IPython notebook
+    :param out_fn: output csv filename; if None specified, in the output path defined in config.py  
+    :param by: grouping used for the summary; if None specified, only aggregate production and attraction will be provided.
+    '''
+    
+    if out_fn is None and by is None:
+        out_fn = mc_obj.config.out_path + f'trips_by_subarea.csv'
+    elif out_fn is None and by:
+        out_fn = mc_obj.config.out_path + f'trips_by_subarea_by_{by}.csv'
+
+    if by in ['peak','veh_own','purpose'] == False:
+        print('Only supports Trips by subarea, peak / vehicle ownership, purpose.')
+        return
+        
+    else:
+        trp_master_table = pd.DataFrame(columns = ['Production','Attraction','peak','veh_own','purpose'])
+        for purpose in md.purposes:
+            for peak in ['PK','OP']:
+                for veh_own in ['0','1']:
+                    if mc_obj.table_container.get_table(purpose):
+                        drive_modes = mc_obj.table_container.get_table(purpose)[f'{veh_own}_{peak}'].keys()
+                        person_trip_table = sum([mc_obj.table_container.get_table(purpose)[f'{veh_own}_{peak}'][mode] for mode in md.modes if mode in drive_modes])
+                        
+                        trp_table = __trip_prod_attr_subarea(mc_obj,person_trip_table)
+                        trp_table['peak'] = peak
+                        trp_table['veh_own'] = veh_own
+                        trp_table['purpose'] = purpose
+                        trp_master_table = trp_master_table.append(trp_table, sort = True)
+        
+        if by == None:
+            trp_summary = trp_master_table.groupby('REPORT_AREA').sum()
+        
+        elif by == 'peak':
+            trp_summary = pd.concat([
+            trp_master_table.groupby(['peak','REPORT_AREA']).sum().loc[peak] for peak in ['PK','OP']], axis = 1, keys = ['PK','OP'])
+        
+        elif by == 'veh_own':
+            trp_summary = pd.concat([
+            trp_master_table.groupby(['veh_own','REPORT_AREA']).sum().loc[veh_own] for veh_own in ['0','1']], axis = 1, keys = ['No car', 'With car']
+            )
+            
+        elif by == 'purpose':
+            trp_summary = pd.concat([
+            trp_master_table.groupby(['purpose','REPORT_AREA']).sum().loc[purpose] for purpose in trp_master_table.purpose.unique()],axis = 1, keys= trp_master_table.purpose.unique())
+
+        trp_summary.to_csv(out_fn)
+
 def mode_share_by_neighborhood(mc_obj, out_fn = None, by = None):
     '''
     Summarizes mode share as the average of trips to/from the 26 Boston neighborhoods, in three categories - drive, non-motorized and transit.
@@ -626,7 +746,7 @@ def mode_share_by_subarea(mc_obj, out_fn = None, by = None):
                             share_table[category] += (trip_table.sum(axis = 1)+trip_table.sum(axis = 0))/2
                         
                         towns = mc_obj.taz.sort_values(md.taz_ID_field).iloc[0:md.max_zone]
-                        towns['REPORT_AREA'] = towns['REPORT_AREA'][towns['REPORT_AREA'].isin(['South Station', 'Seaport Blvd', 'Design Center',
+                        towns['REPORT_AREA'] = towns['REPORT_AREA'][towns['REPORT_AREA'].isin([ 'Seaport Blvd', 'Design Center',
        'Southeast Seaport', 'BCEC', 'Fort Point', 'Broadway'])]
                         trips = pd.concat([towns[[md.taz_ID_field,'REPORT_AREA']],share_table],axis = 1,join = 'inner').groupby(['REPORT_AREA']).sum().drop([md.taz_ID_field],axis = 1)
                         trips['peak'] = peak
@@ -1190,10 +1310,10 @@ def productions_by_region(mc_obj, region='all', cordon_area=[]):
         mask = np.ones(md.max_zone)
         outfile = 'trip_p_to_region.csv'
     elif region=='Boston':
-        mask = (taz['BOSTON']).values * 1 #[1]*447 + [0]*(md.max_zone - 447)
+        mask = (md.taz['BOSTON']).values * 1 #[1]*447 + [0]*(md.max_zone - 447)
         outfile = 'trip_p_to_boston.csv'       
     elif region=='cordon':
-        mask = taz['BOSTON_NB'].isin(cordon_area).values * 1
+        mask = md.taz['BOSTON_NB'].isin(cordon_area).values * 1
         outfile = 'trip_p_to_cordon.csv'           
     
        
@@ -1213,7 +1333,7 @@ def productions_by_region(mc_obj, region='all', cordon_area=[]):
     trips_d = trips_d.join(nm_d)
     trips_d = trips_d.join(smra_d)
     trips_d = trips_d.join(smsh_d)
-    trips_d = taz.join(trips_d)
+    trips_d = md.taz.join(trips_d)
     
     trips_d.to_csv(mc_obj.config.out_path + outfile)
 
